@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "minNoctaliaVersion": "3.6.0",
   "author": "neyfua",
+  "official": false,
   "license": "MIT",
   "description": "A 777 slot machine in your bar. Spin for jackpots.",
   "tags": [
