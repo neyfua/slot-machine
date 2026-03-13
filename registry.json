@@ -1,33 +1,36 @@
 {
   "version": 1,
-  "plugins": {
-    "id": "slot-machine",
-    "name": "Slot Machine",
-    "version": "1.0.0",
-    "minNoctaliaVersion": "3.6.0",
-    "author": "neyfua",
-    "license": "MIT",
-    "description": "A 777 slot machine in your bar. Spin for jackpots.",
-    "tags": [
-      "Bar",
-      "Panel",
-      "Fun"
-    ],
-    "entryPoints": {
-      "main": "Main.qml",
-      "barWidget": "BarWidget.qml",
-      "panel": "Panel.qml",
-      "settings": "Settings.qml"
-    },
-    "dependencies": {
-      "plugins": []
-    },
-    "metadata": {
-      "defaultSettings": {
-        "credits": 10,
-        "iconColor": "primary",
-        "showCredits": true
+  "plugins": [
+    {
+      "id": "slot-machine",
+      "name": "Slot Machine",
+      "version": "1.0.0",
+      "minNoctaliaVersion": "3.6.0",
+      "author": "neyfua",
+      "official": false,
+      "license": "MIT",
+      "description": "A 777 slot machine in your bar. Spin for jackpots.",
+      "tags": [
+        "Bar",
+        "Panel",
+        "Fun"
+      ],
+      "entryPoints": {
+        "main": "Main.qml",
+        "barWidget": "BarWidget.qml",
+        "panel": "Panel.qml",
+        "settings": "Settings.qml"
+      },
+      "dependencies": {
+        "plugins": []
+      },
+      "metadata": {
+        "defaultSettings": {
+          "credits": 10,
+          "iconColor": "primary",
+          "showCredits": true
+        }
       }
     }
-  }
+  ]
 }
