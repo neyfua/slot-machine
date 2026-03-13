@@ -522,15 +522,15 @@ Item {
                                                 }
                                             }
 
-																					NText {
-																							text: (modelData.weight / 385 * 100).toFixed(1) + "%"
-																							pointSize: Style.fontSizeXS
-																							color: Color.mOnSurfaceVariant
+                                            NText {
+                                                text: (modelData.weight / 385 * 100).toFixed(1) + "%"
+                                                pointSize: Style.fontSizeXS
+                                                color: Color.mOnSurfaceVariant
 
-																							Layout.preferredWidth: 30 * Style.uiScaleRatio
-																							horizontalAlignment: Text.AlignRight
-																							font.family: "monospace"
-																					}
+                                                Layout.preferredWidth: 30 * Style.uiScaleRatio
+                                                horizontalAlignment: Text.AlignRight
+                                                font.family: "monospace"
+                                            }
                                         }
                                     }
                                 }

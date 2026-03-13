@@ -14,17 +14,17 @@ Item {
     property string section: ""
 
     // Per-screen bar properties (for multi-monitor and vertical bar support)
-		readonly property string screenName: screen?.name ?? ""
-		readonly property string barPosition: Settings.getBarPositionForScreen(screenName)
-		readonly property bool isBarVertical: barPosition === "left" || barPosition === "right"
-		readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
-		readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
+    readonly property string screenName: screen?.name ?? ""
+    readonly property string barPosition: Settings.getBarPositionForScreen(screenName)
+    readonly property bool isBarVertical: barPosition === "left" || barPosition === "right"
+    readonly property real capsuleHeight: Style.getCapsuleHeightForScreen(screenName)
+    readonly property real barFontSize: Style.getBarFontSizeForScreen(screenName)
 
-		// Content dimensions (visual capsule size)
-		readonly property real contentWidth: row.implicitWidth + Style.marginM * 2
-		readonly property real contentHeight: capsuleHeight
+    // Content dimensions (visual capsule size)
+    readonly property real contentWidth: row.implicitWidth + Style.marginM * 2
+    readonly property real contentHeight: capsuleHeight
 
-		// Widget dimensions (extends to full bar height for better click area)
+    // Widget dimensions (extends to full bar height for better click area)
     implicitWidth: contentWidth
     implicitHeight: contentHeight
 
@@ -37,14 +37,14 @@ Item {
     readonly property int centerReel: machine?.reel1 ?? 0
 
     // Plugin settings
-		readonly property string iconColorId: pluginApi?.pluginSettings?.iconColor ?? "onSurface"
+    readonly property string iconColorId: pluginApi?.pluginSettings?.iconColor ?? "onSurface"
     readonly property var colorMap: ({
-        "primary":          Color.mPrimary,
-        "onSurface":        Color.mOnSurface,
-        "onSurfaceVariant": Color.mOnSurfaceVariant,
-        "error":            Color.mError
-    })
-		readonly property color resolvedIconColor: colorMap[iconColorId] ?? Color.mOnSurface
+            "primary": Color.mPrimary,
+            "onSurface": Color.mOnSurface,
+            "onSurfaceVariant": Color.mOnSurfaceVariant,
+            "error": Color.mError
+        })
+    readonly property color resolvedIconColor: colorMap[iconColorId] ?? Color.mOnSurface
 
     // Pulse animation while spinning
     property real pulseOpacity: 1.0
