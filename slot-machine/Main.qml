@@ -167,7 +167,7 @@ Item {
         }
     ]
 
-    // ── Game state ────────────────────────────────────────────────────────────
+    // Game state
     property int reel0: 0
     property int reel1: 0
     property int reel2: 0
@@ -324,12 +324,16 @@ Item {
         function spin() {
             if (!pluginApi)
                 return;
-            // Open the panel first, then spin after a short delay so the
-            // panel is visible before the reels start moving
-            pluginApi.withCurrentScreen(screen => {
-                pluginApi.openPanel(screen);
-            });
-            ipcSpinDelay.restart();
+            if (pluginApi.panelOpenScreen) {
+                // Panel already open — spin immediately
+                root.spin();
+            } else {
+                // Panel closed — open it first then spin after delay
+                pluginApi.withCurrentScreen(screen => {
+                    pluginApi.openPanel(screen);
+                });
+                ipcSpinDelay.restart();
+            }
         }
 
         function toggle() {

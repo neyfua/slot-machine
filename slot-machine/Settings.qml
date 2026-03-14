@@ -35,14 +35,14 @@ ColumnLayout {
         onSelected: key => root.editIconColor = key
     }
 
-		// IPC keybinding
+    // IPC keybinding
     Rectangle {
-			Layout.fillWidth: true
-			Layout.preferredHeight: infoCol.implicitHeight + Style.marginM * 2
-			color: Color.mSurfaceVariant
-			radius: Style.radiusM
+        Layout.fillWidth: true
+        Layout.preferredHeight: infoCol.implicitHeight + Style.marginM * 2
+        color: Color.mSurfaceVariant
+        radius: Style.radiusM
 
-			ColumnLayout {
+        ColumnLayout {
             id: infoCol
             anchors {
                 fill: parent
@@ -53,48 +53,48 @@ ColumnLayout {
             RowLayout {
                 spacing: Style.marginS
 
-						NIcon {
-								icon: "info-circle"
-								pointSize: Style.fontSizeS
-								color: Color.mPrimary
-						}
+                NIcon {
+                    icon: "info-circle"
+                    pointSize: Style.fontSizeS
+                    color: Color.mPrimary
+                }
 
-						NText {
-								text: "IPC Commands"
-								pointSize: Style.fontSizeS
-								font.weight: Font.Medium
-								color: Color.mOnSurface
-						}
-				}
+                NText {
+                    text: "IPC Commands"
+                    pointSize: Style.fontSizeS
+                    font.weight: Font.Medium
+                    color: Color.mOnSurface
+                }
+            }
 
-				NText {
-					Layout.fillWidth: true
-					text: "Toggle panel: qs -c noctalia-shell ipc call plugin:slot-machine toggle"
-					pointSize: Style.fontSizeXS
-					font.family: Settings.data.ui.fontFixed
-					color: Color.mOnSurfaceVariant
-					wrapMode: Text.WrapAnywhere
-				}
+            NText {
+                Layout.fillWidth: true
+                text: "Toggle panel: qs -c noctalia-shell ipc call plugin:slot-machine toggle"
+                pointSize: Style.fontSizeXS
+                font.family: Settings.data.ui.fontFixed
+                color: Color.mOnSurfaceVariant
+                wrapMode: Text.WrapAnywhere
+            }
 
-				NText {
-					Layout.fillWidth: true
-					text: "Spin: qs -c noctalia-shell ipc call plugin:slot-machine spin"
-					pointSize: Style.fontSizeXS
-					font.family: Settings.data.ui.fontFixed
-					color: Color.mOnSurfaceVariant
-					wrapMode: Text.WrapAnywhere
-				}
+            NText {
+                Layout.fillWidth: true
+                text: "Spin: qs -c noctalia-shell ipc call plugin:slot-machine spin"
+                pointSize: Style.fontSizeXS
+                font.family: Settings.data.ui.fontFixed
+                color: Color.mOnSurfaceVariant
+                wrapMode: Text.WrapAnywhere
+            }
 
-				NText {
-					Layout.fillWidth: true
-					text: "Reset credits: qs -c noctalia-shell ipc call plugin:slot-machine reset"
-					pointSize: Style.fontSizeXS
-					font.family: Settings.data.ui.fontFixed
-					color: Color.mOnSurfaceVariant
-					wrapMode: Text.WrapAnywhere
-				}
-			}
-		}
+            NText {
+                Layout.fillWidth: true
+                text: "Reset credits: qs -c noctalia-shell ipc call plugin:slot-machine reset"
+                pointSize: Style.fontSizeXS
+                font.family: Settings.data.ui.fontFixed
+                color: Color.mOnSurfaceVariant
+                wrapMode: Text.WrapAnywhere
+            }
+        }
+    }
 
     function saveSettings() {
         if (!pluginApi) {
