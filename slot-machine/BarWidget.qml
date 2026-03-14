@@ -37,14 +37,12 @@ Item {
     readonly property int centerReel: machine?.reel1 ?? 0
 
     // Plugin settings
-    readonly property string iconColorId: pluginApi?.pluginSettings?.iconColor ?? "onSurface"
-    readonly property var colorMap: ({
-            "primary": Color.mPrimary,
-            "onSurface": Color.mOnSurface,
-            "onSurfaceVariant": Color.mOnSurfaceVariant,
-            "error": Color.mError
-        })
-    readonly property color resolvedIconColor: colorMap[iconColorId] ?? Color.mOnSurface
+    property var cfg: pluginApi?.pluginSettings || ({})
+    property var defaults: pluginApi?.manifest?.metadata?.defaultSettings || ({})
+
+    readonly property string iconColorKey: cfg.iconColor ?? defaults.iconColor ?? "none"
+    readonly property bool showCredits: cfg.showCredits ?? defaults.showCredits ?? true
+    readonly property color iconColor: Color.resolveColorKey(iconColorKey)
 
     // Pulse animation while spinning
     property real pulseOpacity: 1.0
@@ -142,7 +140,7 @@ Item {
                     var syms = root.machine?.symbols;
                     if (syms && syms[root.centerReel]?.label === "7")
                         return "#FFD700";
-                    return root.resolvedIconColor;
+                    return root.iconColor;
                 }
                 pointSize: root.barFontSize
             }
@@ -161,7 +159,7 @@ Item {
         }
     }
 
-    // ── MouseArea ─────────────────────────────────────────────────────────────
+    // MouseArea
     MouseArea {
         id: mouseArea
         anchors.fill: parent
@@ -186,7 +184,7 @@ Item {
         }
     }
 
-    // ── Context menu ──────────────────────────────────────────────────────────
+    // Context menu
     NPopupContextMenu {
         id: contextMenu
         model: [
