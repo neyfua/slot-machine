@@ -1,6 +1,6 @@
 # 🎰 Slot Machine
 
-- ##### A 777-style slot machine plugin for Noctalia-shell, built with QML. Pure entertainment only, no gambling or betting involved
+- **A 777-style slot machine plugin for Noctalia-shell, built with QML. Pure entertainment only, no gambling or betting involved**
 
 ## Features
 
