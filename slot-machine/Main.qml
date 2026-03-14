@@ -178,7 +178,7 @@ Item {
     property int pendingReel0: 0
     property int pendingReel1: 0
     property int pendingReel2: 0
-    property int credits: pluginApi?.pluginSettings?.credits ?? 10
+    property int credits: pluginApi?.pluginSettings?.credits ?? 15
     property int totalSpins: pluginApi?.pluginSettings?.totalSpins ?? 0
     property int totalWins: pluginApi?.pluginSettings?.totalWins ?? 0
 
@@ -262,11 +262,11 @@ Item {
     function resetCredits() {
         if (credits > 0)
             return;
-        credits = 10;
+        credits = 15;
         lastResult = "";
         spinSerial = 0;
         saveState();
-        ToastService.showNotice("Credits reset to 10");
+        ToastService.showNotice("Credits reset to 15");
     }
 
     function saveState() {

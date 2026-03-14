@@ -1,7 +1,7 @@
 {
   "id": "slot-machine",
   "name": "Slot Machine",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "minNoctaliaVersion": "3.6.0",
   "author": "neyfua",
   "official": false,
@@ -23,7 +23,7 @@
   },
   "metadata": {
     "defaultSettings": {
-      "credits": 30,
+      "credits": 15,
       "showCredits": true
     }
   }
