@@ -5,6 +5,7 @@
 ## Features
 
 - **Bar Widget**: A compact widget for your bar. Enable "Show Credits" in Settings to display your credits (horizontal bar only)
+- **Control Center Widget**: A widget in your control center shortcuts, for people that prefer having no plugin widgets on their bar
 - **Icon Color Customization**: Change the bar widget icon color in Settings. It respects your Noctalia colorscheme
 - **Dynamic Bar Icon**: The bar icon updates to match the symbol in the middle reel during a spin
 - **Paytable**: View all symbols, their rates, and how many credits each combination pays out
@@ -77,7 +78,7 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ## Credits
 
-- Thanks to [Coin Flip](https://github.com/noctalia-dev/noctalia-plugins/tree/main/coin-flip) plugin from Noctalia's official plugins repo for this inspiration
-- Thanks to [Noctalia docs](https://docs.noctalia.dev/) for the guides/examples
-- Thanks to other Noctalia plugins for the references
-- Thanks to Claude being my greatest partner in this time-wasted simple project (you and me was so ass ngl)
+- Thanks [Coin Flip](https://github.com/noctalia-dev/noctalia-plugins/tree/main/coin-flip) plugin from Noctalia's official plugins repo for this inspiration
+- Thanks [Noctalia docs](https://docs.noctalia.dev/) for the guides/examples
+- Thanks other Noctalia plugins for the references
+- Thanks Claude being my greatest partner in this time-wasted simple project (you and me was so ass ngl)
