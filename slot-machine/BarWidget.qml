@@ -209,9 +209,17 @@ Item {
             contextMenu.close();
             PanelService.closeContextMenu(screen);
             if (action === "spin") {
-                if (pluginApi)
-                    pluginApi.openPanel(root.screen);
-                contextSpinDelay.restart();
+                if (pluginApi) {
+                    if (pluginApi.panelOpenScreen) {
+                        // Spin if panel is already open
+                        if (root.machine)
+                            root.machine.spin();
+                    } else {
+                        // Open panel and spin if panel weren't opened with a delay
+                        pluginApi.openPanel(root.screen, root);
+                        contextSpinDelay.restart();
+                    }
+                }
             } else if (action === "reset") {
                 if (root.machine)
                     root.machine.resetCredits();
