@@ -33,6 +33,7 @@ Item {
     readonly property bool spinning: machine?.spinning ?? false
     readonly property int credits: machine?.credits ?? 0
     readonly property string lastResult: machine?.lastResult ?? ""
+    readonly property int lastGain: machine?.lastGain ?? 0
     readonly property int spinSerial: machine?.spinSerial ?? 0
     readonly property int centerReel: machine?.reel1 ?? 0
 
@@ -66,7 +67,7 @@ Item {
     property int winFlashCount: 0
 
     onSpinSerialChanged: {
-        if (lastResult === "win" || lastResult === "smallwin" || lastResult === "jackpot") {
+        if (lastGain !== 0) {
             winFlashCount = 0;
             winFlash = false;
             winFlashTimer.restart();
@@ -108,7 +109,7 @@ Item {
         color: {
             if (root.winFlash && root.lastResult === "jackpot")
                 return "#FFD700";
-            if (root.winFlash && (root.lastResult === "win" || root.lastResult === "smallwin"))
+            if (root.winFlash && (root.lastGain !== 0))
                 return Color.mPrimary;
             if (mouseArea.containsMouse)
                 return Color.mHover;
