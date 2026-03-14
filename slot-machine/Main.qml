@@ -168,12 +168,12 @@ Item {
     ]
 
     // Game state
-    property int reel0: 0
-    property int reel1: 0
-    property int reel2: 0
+    property int reel0: pluginApi?.pluginSettings?.reel0 ?? 0
+    property int reel1: pluginApi?.pluginSettings?.reel1 ?? 0
+    property int reel2: pluginApi?.pluginSettings?.reel2 ?? 0
     property bool spinning: false
-    property string lastResult: ""   // "jackpot" | "win" | "smallwin" | "loss"
-    property int spinSerial: 0       // increments every spin so Panel always sees a change
+    property string lastResult: "" // "jackpot" | "win" | "smallwin" | "loss"
+    property int spinSerial: 0 // increments every spin so Panel always sees a change
     // Pre-picked results, revealed reel-by-reel as each stops
     property int pendingReel0: 0
     property int pendingReel1: 0
@@ -275,6 +275,9 @@ Item {
         pluginApi.pluginSettings.credits = credits;
         pluginApi.pluginSettings.totalSpins = totalSpins;
         pluginApi.pluginSettings.totalWins = totalWins;
+        pluginApi.pluginSettings.reel0 = reel0;
+        pluginApi.pluginSettings.reel1 = reel1;
+        pluginApi.pluginSettings.reel2 = reel2;
         pluginApi.saveSettings();
     }
 
