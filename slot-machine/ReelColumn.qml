@@ -98,7 +98,7 @@ Rectangle {
         var syms = reel.symbols;
         if (!syms || syms.length === 0)
           return Color.mOnSurfaceVariant;
-        return syms[reel.shown]?.label === "7" ? "#FFD700" : Color.mOnSurfaceVariant;
+        return syms[reel.shown]?.color ?? Color.mOnSurfaceVariant;
       }
       pointSize: Style.fontSizeXS
       font.weight: {

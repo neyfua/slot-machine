@@ -10,57 +10,59 @@ Item {
   property var pluginApi: null
 
   // Slot symbols
-  readonly property int cloverGain: 2
+  readonly property int cloverGain: 1
   readonly property var symbols: [
       // Common
       {
           icon: "poo-filled",
           label: "Poo",
-          weight: 28,
+          weight: 21,
           gain: 0
       },
       {
           icon: "cherry-filled",
           label: "Cherry",
-          weight: 28,
+          weight: 19,
           gain: 1
       },
       {
           icon: "lemon-2-filled",
           label: "Lemon",
-          weight: 22,
+          weight: 16,
           gain: 2
       },
       {
           icon: "melon-filled",
           label: "Melon",
-          weight: 18,
+          weight: 14,
           gain: 3
       },
       {
           icon: "bell-filled",
           label: "Bell",
-          weight: 15,
+          weight: 12,
           gain: 4
       },
       {
           icon: "clover-filled",
           label: "Clover",
-          weight: 10,
+          color: "lightgreen",
+          weight: 8,
           gain: cloverGain
       },
       {
           icon: "diamond-filled",
           label: "Diamond",
-          weight: 5,
-          gain: 10
+          weight: 6,
+          gain: 5
       },
       // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
       {
           icon: "play-card-7-filled",
           label: "7",
-          weight: 2,
-          gain: 77
+          color: "#FFD700",
+          weight: 4,
+          gain: 8
       }
   ]
 
@@ -98,7 +100,6 @@ Item {
       var total = 0;
       for (var i = 0; i < symbols.length; i++)
           total += symbols[i].weight;
-      console.log(total);
       return total;
   }
 
@@ -162,10 +163,9 @@ Item {
 
     for (const [label, count] of Object.entries(symbolCount)) {
       const symbol = symbols.find(s => s.label === label);
-      let normalSymbol = symbol.label !== "Clover" && symbol.label !== "7";
       if (count === 3) { // 3 of a kind
         if (symbol.label === "7") { // Jackpot !!!
-          gain += symbol.gain;
+          gain += 77;
           result = "jackpot";
         } else if (symbol.label === "Clover") { // Special clover case
           gain += symbol.gain * 5;
@@ -176,11 +176,11 @@ Item {
         }
         break; // Nothing more to compute
       }
-      // 2 of a kind, clovers count as jokers here
-      else if (normalSymbol && count === 2) {
+        // 2 of a kind, clovers count as jokers here
+      else if (symbol.label !== "Clover" && count === 2) {
         if (clovers === 1) { // Becomes a 3 of a kind
           gain += symbol.gain * 2;
-          result = symbol.label !== "Poo" ? "win" : "poowin"
+          result = symbol.label !== "Poo" ? "win" : "smallwin"
         } else { // Regular 2 of a kind
           gain += symbol.gain;
           result = symbol.label !== "Poo" ? "smallwin" : "lose";
@@ -188,20 +188,20 @@ Item {
         break; // Nothing more to compute
       }
       // Special 3 of a kind : 2 clovers + 1 symbol
-      else if (normalSymbol && clovers === 2) {
+      else if (symbol.label !== "Clover" && clovers === 2) {
         gain += symbol.gain * 2;
-        result = symbol.label !== "Poo" ? "win" : "poowin"
+        result = symbol.label !== "Poo" ? "win" : "smallwin"
         break; // Nothing more to compute
       }
     }
 
-    if (clovers !== 0 && clovers !== 3){
+    if (clovers > 0 && clovers < 3){
         gain += clovers * cloverGain;
         result = result || "smallwin";
     }
 
     if (gain === 0){
-        result = "loss";
+        result = result || "loss";
     } else {
         credits += gain;
         totalWins += 1;
@@ -230,6 +230,26 @@ Item {
     spinSerial = 0;
     saveState();
     ToastService.showNotice("Credits reset to 15");
+  }
+
+  function do_stats(spins){
+    let beforeCredits = credits;
+    console.log("Before: ", beforeCredits);
+    for (var i = 0; i < spins; i++){
+      pendingReel0 = weightedPick();
+      pendingReel1 = weightedPick();
+      pendingReel2 = weightedPick();
+      credits -= 1;
+      landReel(0);
+      landReel(1);
+      landReel(2);
+      landReels();
+    }
+    console.log("After: ", credits);
+    console.log("Average per spin: ", (credits - beforeCredits) / spins);
+    credits = 0;
+    totalSpins = 0;
+    resetCredits();
   }
 
   function saveState() {
@@ -323,6 +343,10 @@ Item {
 
     function reset() {
       root.resetCredits();
+    }
+
+    function do_stats(spins: int) {
+      root.do_stats(spins);
     }
   }
 
