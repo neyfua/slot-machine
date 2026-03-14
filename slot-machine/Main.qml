@@ -9,7 +9,7 @@ Item {
 
     property var pluginApi: null
 
-    // ── Slot symbols ──────────────────────────────────────────────────────────
+    // Slot symbols
     readonly property var symbols: [
         // Common
         {
@@ -278,11 +278,11 @@ Item {
         pluginApi.saveSettings();
     }
 
-    // ── Staggered reel timers (live in Main so they work panel-open or closed) ──
+    // Staggered reel timers (live in Main so they work panel-open or closed)
     // Reel 0 stops first, then 1, then 2. Each reveals its result on stop.
     // Total duration 600+400+300 = 1300ms matches Panel's visual stagger.
     Timer {
-        id: spinTimer   // kept as spinTimer so spin() can call spinTimer.restart()
+        id: spinTimer // kept as spinTimer so spin() can call spinTimer.restart()
         interval: 600
         repeat: false
         onTriggered: {
@@ -309,7 +309,7 @@ Item {
         }
     }
 
-    // ── IPC ───────────────────────────────────────────────────────────────────
+    // IPC
     // Timer to delay spin until after the panel has had time to open
     Timer {
         id: ipcSpinDelay
