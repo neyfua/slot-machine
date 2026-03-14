@@ -33,6 +33,7 @@ Item {
   readonly property bool spinning: machine?.spinning ?? false
   readonly property int credits: machine?.credits ?? 0
   readonly property string lastResult: machine?.lastResult ?? ""
+  readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int centerReel: machine?.reel1 ?? 0
 

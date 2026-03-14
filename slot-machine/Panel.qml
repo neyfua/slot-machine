@@ -26,8 +26,11 @@ Item {
   readonly property int reel2: machine?.reel2 ?? 0
   readonly property bool spinning: machine?.spinning ?? false
   readonly property string lastResult: machine?.lastResult ?? ""
+  readonly property bool withClovers: machine?.withClovers ?? false
+  readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int credits: machine?.credits ?? 0
+  readonly property int totalWeight: machine?.totalWeight ?? 128
 
   // 0 = Spin, 1 = Paytable
   property int activeTab: 0
@@ -74,7 +77,7 @@ Item {
   property bool jackpotActive: false
 
   onSpinSerialChanged: {
-    if (lastResult === "win" || lastResult === "jackpot" || lastResult === "smallwin") {
+    if (lastGain !== 0) {
       flashCount = 0;
       flashActive = true;
       flashTimer.restart();
@@ -312,7 +315,7 @@ Item {
                   return Color.mSurfaceVariant;
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
-                if (root.lastResult === "win" || root.lastResult === "smallwin")
+                if (root.lastGain !== 0)
                   return Color.mPrimary;
                 return Color.mSurfaceVariant;
               }
@@ -334,7 +337,7 @@ Item {
                   symbolIndex: root.reel0
                   symbols: root.symbols
                   isSpinning: root.reel0Spinning
-                  isWin: root.lastResult === "win" || root.lastResult === "jackpot" || root.lastResult === "smallwin"
+                  isWin: root.lastGain !== 0
                   flashActive: root.flashActive
                 }
                 ReelColumn {
@@ -342,7 +345,7 @@ Item {
                   symbolIndex: root.reel1
                   symbols: root.symbols
                   isSpinning: root.reel1Spinning
-                  isWin: root.lastResult === "win" || root.lastResult === "jackpot" || root.lastResult === "smallwin"
+                  isWin: root.lastGain !== 0
                   flashActive: root.flashActive
                 }
                 ReelColumn {
@@ -350,7 +353,7 @@ Item {
                   symbolIndex: root.reel2
                   symbols: root.symbols
                   isSpinning: root.reel2Spinning
-                  isWin: root.lastResult === "win" || root.lastResult === "jackpot" || root.lastResult === "smallwin"
+                  isWin: root.lastGain !== 0
                   flashActive: root.flashActive
                 }
               }
@@ -359,24 +362,35 @@ Item {
             NText {
               Layout.alignment: Qt.AlignHCenter
               text: {
+                var credits = root.lastGain + " credits!";
                 if (root.spinning)
-                  return "Spinning...";
+                    return "Spinning...";
                 if (root.lastResult === "jackpot")
-                  return "JACKPOT! +77 credits!";
+                    return "JACKPOT! +" + credits;
+
+                if (root.lastResult === "win" && root.withClovers)
+                    return "Lucky winner! +" + credits;
                 if (root.lastResult === "win")
-                  return "Winner! +5 credits!";
+                    return "Winner! +" + credits;
+
+                if (root.lastResult === "smallwin" && root.withClovers)
+                    return "Lucky you! +" + credits;
                 if (root.lastResult === "smallwin")
-                  return "Two of a kind! +2 credits!";
+                    return "Two of a kind! +" + credits;
+
+                if (root.lastResult === "poowin")
+                    return "Poo Poo Poo! +" + credits;
+
                 if (root.lastResult === "loss")
                   return "No match. Try again!";
                 return "Press SPIN to play";
               }
               color: {
-								if (root.spinning)
-									return Color.mOnSurfaceVariant
+                if (root.spinning)
+                    return Color.mOnSurfaceVariant
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
-                if (root.lastResult === "win" || root.lastResult === "smallwin")
+                if (root.lastGain !== 0)
                   return Color.mPrimary;
                 return Color.mOnSurfaceVariant;
               }
@@ -423,50 +437,166 @@ Item {
 
             // Payout rules
             Rectangle {
-              Layout.fillWidth: true
-              color: Color.mSurfaceVariant
-              radius: Style.radiusM
-              implicitHeight: payoutRules.implicitHeight + Style.marginM * 2
+                Layout.fillWidth: true
+                color: Color.mSurfaceVariant
+                radius: Style.radiusM
+                implicitHeight: payoutRules.implicitHeight + Style.marginM * 2
 
-              ColumnLayout {
-                id: payoutRules
-                anchors {
-                  left: parent.left
-                  right: parent.right
-                  top: parent.top
-                  margins: Style.marginM
-                }
-                spacing: Style.marginXS
+                RowLayout {
+                    anchors {
+                        left: parent.left
+                        right: parent.right
+                        top: parent.top
+                        margins: 8
+                    }
+                    spacing: 20
+                    ColumnLayout {
+                        id: payoutRules
+                        spacing: 4
 
-                NText {
-                  text: "Payouts"
-                  pointSize: Style.fontSizeS
-                  font.weight: Font.Bold
-                  color: Color.mOnSurface
-                  bottomPadding: 2
+                        NText {
+                            text: "Symbol values"
+                            pointSize: Style.fontSizeS
+                            font.weight: Font.Bold
+                            color: Color.mOnSurface
+                            bottomPadding: 2
+                        }
+
+                        Repeater {
+                            model: root.symbols
+
+                            RowLayout {
+                                width: symbolList.width
+                                spacing: Style.marginS
+
+                                NIcon {
+                                    icon: modelData.icon
+                                    pointSize: Style.fontSizeM
+                                    color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                }
+
+                                NText {
+                                    text: modelData.label
+                                    pointSize: Style.fontSizeS
+                                    color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                    font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
+                                    Layout.fillWidth: true
+                                }
+
+                                NText {
+                                    text: modelData.label === "7" ? "??" : modelData.gain
+                                    pointSize: Style.fontSizeS
+                                    color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                    font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
+                                    // Layout.fillWidth: true
+                                }
+                            }
+                        }
+                    }
+                    NDivider {
+                        vertical: true
+                        Layout.fillHeight: true
+                    }
+                    GridLayout {
+                        id: payoutRules2
+                        rows: -1
+                        columns: 2
+                        rowSpacing: 4
+
+                        NText {
+                            text: "Combinations"
+                            pointSize: Style.fontSizeS
+                            font.weight: Font.Bold
+                            color: Color.mOnSurface
+                            bottomPadding: 2
+                            Layout.fillWidth: true
+                        }
+
+                        NText {
+                            text: "Value"
+                            pointSize: Style.fontSizeS
+                            font.weight: Font.Bold
+                            color: Color.mOnSurface
+                            bottomPadding: 2
+                        }
+                        NText {
+                            text: "777"
+                            color: "#FFD700"
+                            pointSize: Style.fontSizeS
+                            font.weight: Font.Bold
+                        }
+                        NText {
+                            text: "77"
+                            color: "#FFD700"
+                            pointSize: Style.fontSizeS
+                            font.weight: Font.Bold
+                        }
+                        NText {
+                            text: "Triple Clover"
+                            color: Color.mPrimary
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Value * 5"
+                            color: Color.mPrimary
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Three of a kind"
+                            color: Color.mPrimary
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Value * 2"
+                            color: Color.mPrimary
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Two of a kind"
+                            color: Color.mOnSurface
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Value"
+                            color: Color.mOnSurface
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "No match"
+                            color: Color.mOnSurfaceVariant
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Lose (-1 credit)"
+                            color: Color.mOnSurfaceVariant
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Clover is a joker"
+                            color: Color.mOnSurface
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Clover value"
+                        }
+                        NText {
+                            text: ""
+                        }
+                        NText {
+                            text: "plus combination"
+                            color: Color.mOnSurface
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: ""
+                        }
+                        NText {
+                            text: "value (no jackpot)"
+                            color: Color.mOnSurface
+                            pointSize: Style.fontSizeS
+                        }
+                    }
                 }
-                NText {
-                  text: "777 triple  =  JACKPOT (+77 credits)"
-                  color: "#FFD700"
-                  pointSize: Style.fontSizeS
-                  font.weight: Font.Bold
-                }
-                NText {
-                  text: "Any triple  =  Win (+5 credits)"
-                  color: Color.mPrimary
-                  pointSize: Style.fontSizeS
-                }
-                NText {
-                  text: "Two match  =  Small win (+2 credits)"
-                  color: Color.mOnSurface
-                  pointSize: Style.fontSizeS
-                }
-                NText {
-                  text: "No match  =  Lose (-1 credit)"
-                  color: Color.mOnSurfaceVariant
-                  pointSize: Style.fontSizeS
-                }
-              }
             }
 
             // Symbol list (scrollable)
@@ -526,7 +656,7 @@ Item {
                         color: Color.mSurface
 
                         Rectangle {
-                          width: parent.width * (modelData.weight / 385)
+                          width: parent.width * (modelData.weight / root.totalWeight85)
                           height: parent.height
                           radius: parent.radius
                           color: modelData.label === "7" ? "#FFD700" : Color.mPrimary
@@ -534,11 +664,11 @@ Item {
                       }
 
                       NText {
-                        text: (modelData.weight / 385 * 100).toFixed(1) + "%"
+                        text: (modelData.weight / root.totalWeight * 100).toFixed(1) + "%"
                         pointSize: Style.fontSizeXS
                         color: Color.mOnSurfaceVariant
 
-                        Layout.preferredWidth: 30 * Style.uiScaleRatio
+                        Layout.preferredWidth: 40 * Style.uiScaleRatio
                         horizontalAlignment: Text.AlignRight
                         font.family: "monospace"
                       }

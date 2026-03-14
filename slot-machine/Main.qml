@@ -10,162 +10,71 @@ Item {
   property var pluginApi: null
 
   // Slot symbols
+  readonly property int cloverGain: 2
   readonly property var symbols: [
-    // Common
-    {
-      icon: "apple-filled",
-      label: "Apple",
-      weight: 30
-    },
-    {
-      icon: "lemon-2-filled",
-      label: "Lemon",
-      weight: 29
-    },
-    {
-      icon: "mushroom-filled",
-      label: "Mushroom",
-      weight: 28
-    },
-    {
-      icon: "cherry-filled",
-      label: "Cherry",
-      weight: 27
-    },
-    {
-      icon: "melon-filled",
-      label: "Melon",
-      weight: 26
-    },
-    {
-      icon: "seedling-filled",
-      label: "Seedling",
-      weight: 25
-    },
-    {
-      icon: "bone-filled",
-      label: "Bone",
-      weight: 24
-    },
-    {
-      icon: "butterfly-filled",
-      label: "Butterfly",
-      weight: 23
-    },
-    {
-      icon: "bug-filled",
-      label: "Bug",
-      weight: 22
-    },
-    {
-      icon: "fish-bone-filled",
-      label: "Fish",
-      weight: 21
-    },
-    {
-      icon: "bell-filled",
-      label: "Bell",
-      weight: 20
-    },
-    {
-      icon: "pizza-filled",
-      label: "Pizza",
-      weight: 19
-    },
-    {
-      icon: "flame-filled",
-      label: "Flame",
-      weight: 18
-    },
-    {
-      icon: "alien-filled",
-      label: "Alien",
-      weight: 17
-    },
-    {
-      icon: "star-filled",
-      label: "Star",
-      weight: 16
-    },
-    {
-      icon: "bomb-filled",
-      label: "Bomb",
-      weight: 15
-    },
-    {
-      icon: "flare-filled",
-      label: "Flare",
-      weight: 14
-    },
-    {
-      icon: "trophy-filled",
-      label: "Trophy",
-      weight: 13
-    },
-    // Less common
-    {
-      icon: "clover-filled",
-      label: "Clover",
-      weight: 12
-    },
-    {
-      icon: "confetti-filled",
-      label: "Confetti",
-      weight: 11
-    },
-    {
-      icon: "cannabis-filled",
-      label: "Cannabis",
-      weight: 10
-    },
-    {
-      icon: "sun-filled",
-      label: "Sun",
-      weight: 9
-    },
-    {
-      icon: "moon-filled",
-      label: "Moon",
-      weight: 8
-    },
-    {
-      icon: "meteor-filled",
-      label: "Meteor",
-      weight: 7
-    },
-    {
-      icon: "ghost-3-filled",
-      label: "Ghost",
-      weight: 6
-    },
-    {
-      icon: "poo-filled",
-      label: "Poo",
-      weight: 5
-    },
-    // Rare
-    {
-      icon: "heart-filled",
-      label: "Heart",
-      weight: 4
-    },
-    {
-      icon: "bolt-filled",
-      label: "Bolt",
-      weight: 3
-    },
-    {
-      icon: "diamond-filled",
-      label: "Diamond",
-      weight: 2
-    },
-    // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
-    {
-      icon: "play-card-7-filled",
-      label: "7",
-      weight: 1
-    }
+      // Common
+      {
+          icon: "poo-filled",
+          label: "Poo",
+          weight: 28,
+          gain: 0
+      },
+      {
+          icon: "cherry-filled",
+          label: "Cherry",
+          weight: 28,
+          gain: 1
+      },
+      {
+          icon: "lemon-2-filled",
+          label: "Lemon",
+          weight: 22,
+          gain: 2
+      },
+      {
+          icon: "melon-filled",
+          label: "Melon",
+          weight: 18,
+          gain: 3
+      },
+      {
+          icon: "bell-filled",
+          label: "Bell",
+          weight: 15,
+          gain: 4
+      },
+      {
+          icon: "clover-filled",
+          label: "Clover",
+          weight: 10,
+          gain: cloverGain
+      },
+      {
+          icon: "diamond-filled",
+          label: "Diamond",
+          weight: 5,
+          gain: 10
+      },
+      // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
+      {
+          icon: "play-card-7-filled",
+          label: "7",
+          weight: 2,
+          gain: 77
+      }
   ]
+
+    /* Gain table :
+       777: 77 credits
+       Two  of a kind: Symbol gain
+       Tree of a kind: Symbol gain * 2
+
+       Clover is a joker:
+       1 clover               : cloverGain
+       1 clover  + 2 of a kind: cloverGain     + symbol Tree of a kind
+       2 clovers + 1 symbol   : cloverGain * 2 + symbol Tree of a kind
+       3 clovers              : cloverGain * 5
+    */
 
   // Game state
   property int reel0: pluginApi?.pluginSettings?.reel0 ?? 0
@@ -173,7 +82,9 @@ Item {
   property int reel2: pluginApi?.pluginSettings?.reel2 ?? 0
   property bool spinning: false
   property bool winDelayActive: false
-  property string lastResult: "" // "jackpot" | "win" | "smallwin" | "loss"
+  property bool withClovers: false // Did we win with or without clovers ?
+  property int lastGain: 0
+  property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
   // Pre-picked results, revealed reel-by-reel as each stops
   property int pendingReel0: 0
@@ -183,19 +94,24 @@ Item {
   property int totalSpins: pluginApi?.pluginSettings?.totalSpins ?? 0
   property int totalWins: pluginApi?.pluginSettings?.totalWins ?? 0
 
+  readonly property int totalWeight: {
+      var total = 0;
+      for (var i = 0; i < symbols.length; i++)
+          total += symbols[i].weight;
+      console.log(total);
+      return total;
+  }
+
   // Weighted random pick
   function weightedPick() {
-    var total = 0;
-    for (var i = 0; i < symbols.length; i++)
-      total += symbols[i].weight;
-    var r = Math.random() * total;
-    var acc = 0;
-    for (var j = 0; j < symbols.length; j++) {
-      acc += symbols[j].weight;
-      if (r < acc)
-        return j;
-    }
-    return symbols.length - 1;
+      var r = Math.random() * totalWeight;
+      var acc = 0;
+      for (var j = 0; j < symbols.length; j++) {
+          acc += symbols[j].weight;
+          if (r < acc)
+              return j;
+      }
+      return symbols.length - 1;
   }
 
   // Spin
@@ -232,37 +148,73 @@ Item {
   function landReels() {
     // All reels have already been assigned by landReel() calls.
     // Just resolve the result.
-    var s0 = symbols[reel0].label;
-    var s1 = symbols[reel1].label;
-    var s2 = symbols[reel2].label;
+    var results = [symbols[reel0], symbols[reel1], symbols[reel2]];
+
+    // Count occurrences of each symbol
+    const symbolCount = {};
+    results.forEach(symbol => {
+      symbolCount[symbol.label] = (symbolCount[symbol.label] || 0) + 1;
+    });
 
     var result;
-    if (s0 === "7" && s1 === "7" && s2 === "7") {
-      result = "jackpot";
-      credits += 77;
-      totalWins += 1;
-      ToastService.showNotice("JACKPOT! +77 credits");
-    } else if (s0 === s1 && s1 === s2) {
-      result = "win";
-      credits += 5;
-      totalWins += 1;
-      ToastService.showNotice("Three " + s0 + "s! +5 credits");
-    } else if (s0 === s1 || s1 === s2 || s0 === s2) {
-      result = "smallwin";
-      credits += 2;
-      totalWins += 1;
-      ToastService.showNotice("Two of a kind! +2 credits");
+    let gain = 0;
+    let clovers = symbolCount["Clover"] || 0;
+
+    for (const [label, count] of Object.entries(symbolCount)) {
+      const symbol = symbols.find(s => s.label === label);
+      let normalSymbol = symbol.label !== "Clover" && symbol.label !== "7";
+      if (count === 3) { // 3 of a kind
+        if (symbol.label === "7") { // Jackpot !!!
+          gain += symbol.gain;
+          result = "jackpot";
+        } else if (symbol.label === "Clover") { // Special clover case
+          gain += symbol.gain * 5;
+          result = "win";
+        } else { // Regular 3 of a kind
+          gain += symbol.gain * 2;
+          result = symbol.label !== "Poo" ? "win" : "poowin";
+        }
+        break; // Nothing more to compute
+      }
+      // 2 of a kind, clovers count as jokers here
+      else if (normalSymbol && count === 2) {
+        if (clovers === 1) { // Becomes a 3 of a kind
+          gain += symbol.gain * 2;
+          result = symbol.label !== "Poo" ? "win" : "poowin"
+        } else { // Regular 2 of a kind
+          gain += symbol.gain;
+          result = symbol.label !== "Poo" ? "smallwin" : "lose";
+        }
+        break; // Nothing more to compute
+      }
+      // Special 3 of a kind : 2 clovers + 1 symbol
+      else if (normalSymbol && clovers === 2) {
+        gain += symbol.gain * 2;
+        result = symbol.label !== "Poo" ? "win" : "poowin"
+        break; // Nothing more to compute
+      }
+    }
+
+    if (clovers !== 0 && clovers !== 3){
+        gain += clovers * cloverGain;
+        result = result || "smallwin";
+    }
+
+    if (gain === 0){
+        result = "loss";
     } else {
-      result = "loss";
+        credits += gain;
+        totalWins += 1;
+        winDelayActive = true;
+        winDelayTimer.restart();
     }
 
     spinning = false;
     lastResult = result;
+    lastGain = gain;
+    withClovers = clovers !== 0;
     spinSerial += 1;
-    if (result === "win" || result === "jackpot" || result === "smallwin") {
-      winDelayActive = true;
-      winDelayTimer.restart();
-    }
+
     saveState();
   }
 
@@ -273,6 +225,8 @@ Item {
       return;
     credits = 15;
     lastResult = "";
+    lastGain = 0;
+    withClovers = false;
     spinSerial = 0;
     saveState();
     ToastService.showNotice("Credits reset to 15");
