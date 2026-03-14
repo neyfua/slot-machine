@@ -50,8 +50,6 @@ Item {
         interval: 600
         onTriggered: {
             reel0Spinning = false;
-            if (root.machine)
-                root.machine.landReel(0);
             r1Stop.restart();
         }
     }
@@ -60,8 +58,6 @@ Item {
         interval: 400
         onTriggered: {
             reel1Spinning = false;
-            if (root.machine)
-                root.machine.landReel(1);
             r2Stop.restart();
         }
     }
@@ -70,9 +66,6 @@ Item {
         interval: 300
         onTriggered: {
             reel2Spinning = false;
-            if (root.machine)
-                root.machine.landReel(2);
-            root.machine.landReels();
         }
     }
 
