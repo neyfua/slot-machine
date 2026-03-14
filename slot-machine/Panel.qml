@@ -300,7 +300,7 @@ Item {
                                 if (root.lastResult === "jackpot")
                                     return "#FFD700";
                                 if (root.lastGain !== 0)
-                                    return Color.mPrimary;
+                                    return root.withClovers ? "lightgreen" : Color.mPrimary;
                                 return Color.mSurfaceVariant;
                             }
                             Behavior on color {
@@ -309,7 +309,7 @@ Item {
                                 }
                             }
 
-                            border.color: root.jackpotActive ? "#FFD700" : Style.capsuleBorderColor
+                            border.color: root.jackpotActive ? "#FFD700" : (root.withClovers ? "lightgreen" : Style.capsuleBorderColor)
                             border.width: root.jackpotActive ? 3 : Style.capsuleBorderWidth
 
                             RowLayout {
@@ -363,7 +363,7 @@ Item {
                                     return "Two of a kind! +" + credits;
 
                                 if (root.lastResult === "poowin")
-                                    return "Poo Poo Poo! +" + credits;
+                                    return "Poo Poo Poo!";
 
                                 if (root.lastResult === "loss")
                                     return "No match. Try again!";
@@ -372,6 +372,9 @@ Item {
                             color: {
                                 if (root.lastResult === "jackpot")
                                     return "#FFD700";
+                                if (withClovers) {
+                                    return "lightgreen";
+                                }
                                 if (root.lastGain !== 0)
                                     return Color.mPrimary;
                                 return Color.mOnSurfaceVariant;
@@ -454,21 +457,21 @@ Item {
                                             NIcon {
                                                 icon: modelData.icon
                                                 pointSize: Style.fontSizeM
-                                                color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                                color: modelData?.color ?? Color.mOnSurface
                                             }
 
                                             NText {
                                                 text: modelData.label
                                                 pointSize: Style.fontSizeS
-                                                color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                                color: modelData?.color ?? Color.mOnSurface
                                                 font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
                                                 Layout.fillWidth: true
                                             }
 
                                             NText {
-                                                text: modelData.label === "7" ? "??" : modelData.gain
+                                                text: modelData.gain
                                                 pointSize: Style.fontSizeS
-                                                color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                                color: modelData?.color ?? Color.mOnSurface
                                                 font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
                                                 // Layout.fillWidth: true
                                             }
@@ -508,19 +511,19 @@ Item {
                                         font.weight: Font.Bold
                                     }
                                     NText {
-                                        text: "77"
+                                        text: "777"
                                         color: "#FFD700"
                                         pointSize: Style.fontSizeS
                                         font.weight: Font.Bold
                                     }
                                     NText {
                                         text: "Triple Clover"
-                                        color: Color.mPrimary
+                                        color: "lightgreen"
                                         pointSize: Style.fontSizeS
                                     }
                                     NText {
                                         text: "Value * 5"
-                                        color: Color.mPrimary
+                                        color: "lightgreen"
                                         pointSize: Style.fontSizeS
                                     }
                                     NText {
@@ -620,13 +623,13 @@ Item {
                                             NIcon {
                                                 icon: modelData.icon
                                                 pointSize: Style.fontSizeM
-                                                color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                                color: modelData?.color ?? Color.mOnSurface
                                             }
 
                                             NText {
                                                 text: modelData.label
                                                 pointSize: Style.fontSizeS
-                                                color: modelData.label === "7" ? "#FFD700" : Color.mOnSurface
+                                                color: modelData?.color ?? Color.mOnSurface
                                                 font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
                                                 Layout.fillWidth: true
                                             }
@@ -641,7 +644,7 @@ Item {
                                                     width: parent.width * (modelData.weight / root.totalWeight)
                                                     height: parent.height
                                                     radius: parent.radius
-                                                    color: modelData.label === "7" ? "#FFD700" : Color.mPrimary
+                                                    color: modelData?.color ?? Color.mPrimary
                                                 }
                                             }
 

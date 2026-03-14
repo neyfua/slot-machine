@@ -139,8 +139,8 @@ Item {
                     if (root.winFlash && root.lastResult === "jackpot")
                         return "#1a1a2e";
                     var syms = root.machine?.symbols;
-                    if (syms && syms[root.centerReel]?.label === "7")
-                        return "#FFD700";
+                    if (syms)
+                        return syms[root.centerReel]?.color ?? root.iconColor;
                     return root.iconColor;
                 }
                 pointSize: root.barFontSize

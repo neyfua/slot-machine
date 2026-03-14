@@ -71,8 +71,8 @@ Rectangle {
                 if (!syms || syms.length === 0)
                     return Color.mOnSurface;
                 var lbl = syms[reel.shown]?.label ?? "";
-                if (lbl === "7")
-                    return "#FFD700";
+                if (lbl === "7" || lbl === "Clover")
+                    return syms[reel.shown]?.color;
                 if (reel.isWin && reel.flashActive)
                     return Color.mPrimary;
                 return Color.mOnSurface;
@@ -98,7 +98,7 @@ Rectangle {
                 var syms = reel.symbols;
                 if (!syms || syms.length === 0)
                     return Color.mOnSurfaceVariant;
-                return syms[reel.shown]?.label === "7" ? "#FFD700" : Color.mOnSurfaceVariant;
+                return syms[reel.shown]?.color ?? Color.mOnSurfaceVariant;
             }
             pointSize: Style.fontSizeXS
             font.weight: {
