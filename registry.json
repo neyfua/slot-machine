@@ -4,33 +4,18 @@
     {
       "id": "slot-machine",
       "name": "Slot Machine",
-      "version": "1.0.8",
-      "minNoctaliaVersion": "3.6.0",
-      "author": "neyfua",
+      "version": "1.0.9",
       "official": false,
-      "license": "MIT",
+      "author": "neyfua",
       "description": "A 777 slot machine in your bar. Spin for jackpots.",
+      "minNoctaliaVersion": "3.6.0",
+      "license": "MIT",
       "tags": [
         "Bar",
         "Panel",
         "Fun"
       ],
-      "entryPoints": {
-        "main": "Main.qml",
-        "barWidget": "BarWidget.qml",
-        "controlCenterWidget": "ControlCenterWidget.qml",
-        "panel": "Panel.qml",
-        "settings": "Settings.qml"
-      },
-      "dependencies": {
-        "plugins": []
-      },
-      "metadata": {
-        "defaultSettings": {
-          "credits": 15,
-          "showCredits": true
-        }
-      }
+      "lastUpdated": "2026-03-14T23:49:13+07:00"
     }
   ]
 }
