@@ -54,7 +54,7 @@ https://github.com/neyfua/slot-machine.git
 
 ## License
 
-MIT
+- MIT
 
 ## Credits
 
