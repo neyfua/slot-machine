@@ -24,6 +24,29 @@ https://github.com/neyfua/slot-machine.git
 
 5. Click install button
 
+## IPC Commands
+- Toggle panel:
+
+```bash
+qs -c noctalia-shell ipc call plugin:slot-machine toggle
+```
+
+- Spin:
+
+```bash
+qs -c noctalia-shell ipc call plugin:slot-machine spin
+```
+
+- Reset credits:
+
+```bash
+qs -c noctalia-shell ipc call plugin:slot-machine reset
+```
+
+## Colors
+
+- The colours are all pulled from your current Noctalia colourscheme.
+
 ## Previews
 
 - Normal spin:
@@ -41,10 +64,6 @@ https://github.com/neyfua/slot-machine.git
 - JACKPOT HAKARI TUCA DONKA SKIBIDI DOP DOP YES YES:
 
 ![Jackpot](Assets/jackpot.png)
-
-## Colors
-
-- The colours are all pulled from your current Noctalia colourscheme.
 
 ## Requirements
 

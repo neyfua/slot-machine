@@ -4,7 +4,7 @@
     {
       "id": "slot-machine",
       "name": "Slot Machine",
-      "version": "1.0.4",
+      "version": "1.0.5",
       "minNoctaliaVersion": "3.6.0",
       "author": "neyfua",
       "official": false,
