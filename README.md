@@ -25,7 +25,22 @@ https://github.com/neyfua/slot-machine.git
 5. Click install button
 
 ## Previews
-<img width="486" height="534" alt="image" src="https://github.com/user-attachments/assets/2108a3d5-4258-413d-83da-397d252cca58" />
+
+- Normal spin:
+
+![Spin](Assets/spin.png)
+
+- Two of a Kind:
+
+![Two of a Kind](Assets/two_of_a_kind.png)
+
+- Winner:
+
+![Winner](Assets/winner.png)
+
+- JACKPOT HAKARI TUCA DONKA SKIBIDI DOP DOP YES YES:
+
+![Jackpot](Assets/jackpot.png)
 
 ## Colors
 
