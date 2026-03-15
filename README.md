@@ -4,17 +4,19 @@
 
 ## Features
 
+- **Doom Spinning**: Instead doom scrolling TikTok or Instagram reels on your phone you can doom spinning on this plugin instead (healthier for sure)
 - **Bar Widget**: A compact widget for your bar. Enable "Show Credits" in Settings to display your credits (horizontal bar only)
 - **Control Center Widget**: A widget in your control center shortcuts, for people that prefer having no plugin widgets on their bar
 - **Icon Color Customization**: Change the bar widget icon color in Settings. It respects your Noctalia colorscheme
 - **Dynamic Bar Icon**: The bar icon updates to match the symbol in the middle reel during a spin
 - **Paytable**: View all symbols, their rates, and how many credits each combination pays out
 - **Reset Credits**: Reset your credits back to default *(15 credits)* when it hits 0
+- **Spins Counting**: Will keep your spins count each updates, only reset if you uninstall and reinstall the plugin (don't do that)
 
 ## Installation
 1. Navigate to the Noctalia settings plugins section
 
-2. Enter the sources sub-menu
+2. Open the sources sub-menu
 
 3. Add Slot Machine as a custom repository
 ```bash
