@@ -191,14 +191,14 @@ Item {
       ColumnLayout {
         anchors {
           fill: parent
-          margins: 10
+          margins: Style.marginM
         }
-        spacing: 10
+        spacing: Style.marginM
 
         // Header
         RowLayout {
           Layout.fillWidth: true
-          Layout.topMargin: 2
+          Layout.topMargin: Style.marginXS
 
           NIcon {
             icon: "brand-mastercard"
@@ -295,7 +295,7 @@ Item {
           // Spin tab
           ColumnLayout {
             anchors.fill: parent
-            spacing: 6
+            spacing: Style.marginM
             visible: root.activeTab === 0
 
             Rectangle {
