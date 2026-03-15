@@ -172,6 +172,7 @@ Item {
   property int reel1: pluginApi?.pluginSettings?.reel1 ?? 0
   property int reel2: pluginApi?.pluginSettings?.reel2 ?? 0
   property bool spinning: false
+  property bool winDelayActive: false
   property string lastResult: "" // "jackpot" | "win" | "smallwin" | "loss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
   // Pre-picked results, revealed reel-by-reel as each stops
@@ -200,6 +201,8 @@ Item {
   // Spin
   function spin() {
     if (spinning)
+      return;
+    if (winDelayActive)
       return;
     if (credits <= 0) {
       ToastService.showError("No credits left! Reset to play again.");
@@ -256,6 +259,10 @@ Item {
     spinning = false;
     lastResult = result;
     spinSerial += 1;
+    if (result === "win" || result === "jackpot" || result === "smallwin") {
+      winDelayActive = true;
+      winDelayTimer.restart();
+    }
     saveState();
   }
 
@@ -314,6 +321,15 @@ Item {
     }
   }
 
+  Timer {
+    id: winDelayTimer
+    interval: 1000
+    repeat: false
+    onTriggered: {
+      root.winDelayActive = false;
+    }
+  }
+
   // IPC
   // Timer to delay spin until after the panel has had time to open
   Timer {
@@ -328,6 +344,8 @@ Item {
 
     function spin() {
       if (!pluginApi)
+        return;
+      if (root.winDelayActive)
         return;
       if (pluginApi.panelOpenScreen) {
         // Panel already open — spin immediately

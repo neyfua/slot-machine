@@ -452,12 +452,12 @@ Item {
                   pointSize: Style.fontSizeS
                 }
                 NText {
-                  text: "Two match   =  Small win (+2 credits)"
+                  text: "Two match  =  Small win (+2 credits)"
                   color: Color.mOnSurface
                   pointSize: Style.fontSizeS
                 }
                 NText {
-                  text: "No match    =  Lose (-1 credit)"
+                  text: "No match  =  Lose (-1 credit)"
                   color: Color.mOnSurfaceVariant
                   pointSize: Style.fontSizeS
                 }
