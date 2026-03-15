@@ -387,9 +387,9 @@ Item {
                         NButton {
                             Layout.fillWidth: true
                             text: "Reset Credits"
-                            enabled: root.credits <= 0
-                            backgroundColor: root.credits <= 0 ? Color.mPrimary : Color.mSurfaceVariant
-                            textColor: root.credits <= 0 ? Color.mOnPrimary : Color.mOnSurfaceVariant
+                            enabled: root.credits <= 0 && !root.reel2Spinning && !root.spinning
+                            backgroundColor: (root.credits <= 0 && !root.reel2Spinning && !root.spinning) ? Color.mPrimary : Color.mSurfaceVariant
+                            textColor: (root.credits <= 0 && !root.reel2Spinning && !root.spinning) ? Color.mOnPrimary : Color.mOnSurfaceVariant
                             onClicked: {
                                 if (root.machine)
                                     root.machine.resetCredits();

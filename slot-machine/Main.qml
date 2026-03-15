@@ -262,6 +262,8 @@ Item {
     function resetCredits() {
         if (credits > 0)
             return;
+        if (spinning)
+            return;
         credits = 15;
         lastResult = "";
         spinSerial = 0;
@@ -345,10 +347,6 @@ Item {
             pluginApi.withCurrentScreen(screen => {
                 pluginApi.togglePanel(screen);
             });
-        }
-
-        function reset() {
-            root.resetCredits();
         }
     }
 
