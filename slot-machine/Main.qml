@@ -348,6 +348,10 @@ Item {
                                     pluginApi.togglePanel(screen);
                                   });
     }
+
+    function reset() {
+      root.resetCredits();
+    }
   }
 
   Component.onCompleted: {
