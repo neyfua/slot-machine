@@ -14,7 +14,7 @@ Item {
 
   // Height adapts per tab: Spin tab is compact, Paytable tab is taller
   property real contentPreferredWidth: 400 * Style.uiScaleRatio
-  property real contentPreferredHeight: activeTab === 0 ? 430 * Style.uiScaleRatio : 620 * Style.uiScaleRatio
+  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 600 * Style.uiScaleRatio
 
   anchors.fill: parent
 
@@ -193,12 +193,13 @@ Item {
           fill: parent
           margins: Style.marginM
         }
-        spacing: Style.marginM
+        spacing: 0
 
         // Header
         RowLayout {
           Layout.fillWidth: true
           Layout.topMargin: Style.marginXS
+          Layout.bottomMargin: Style.marginM
 
           NIcon {
             icon: "brand-mastercard"
@@ -227,6 +228,7 @@ Item {
         // Credits bar
         Rectangle {
           Layout.fillWidth: true
+          Layout.bottomMargin: Style.marginM
           height: 40 * Style.uiScaleRatio
           color: Color.mSurfaceVariant
           radius: Style.radiusM
@@ -262,6 +264,7 @@ Item {
         // Tab bar
         Rectangle {
           Layout.fillWidth: true
+          Layout.bottomMargin: Style.marginM
           implicitHeight: tabRow.implicitHeight + Style.marginS * 2
           color: Color.mSurfaceVariant
           radius: Style.radiusM
@@ -300,7 +303,7 @@ Item {
 
             Rectangle {
               Layout.fillWidth: true
-              height: 170 * Style.uiScaleRatio
+              Layout.fillHeight: true
               radius: Style.radiusL
               clip: true
 
@@ -413,7 +416,7 @@ Item {
           // Paytable tab
           ColumnLayout {
             anchors.fill: parent
-            spacing: 10
+            spacing: Style.marginM
             visible: root.activeTab === 1
 
             // Payout rules
@@ -421,7 +424,7 @@ Item {
               Layout.fillWidth: true
               color: Color.mSurfaceVariant
               radius: Style.radiusM
-              implicitHeight: payoutRules.implicitHeight + 16
+              implicitHeight: payoutRules.implicitHeight + Style.marginM * 2
 
               ColumnLayout {
                 id: payoutRules
@@ -429,9 +432,9 @@ Item {
                   left: parent.left
                   right: parent.right
                   top: parent.top
-                  margins: 8
+                  margins: Style.marginM
                 }
-                spacing: 4
+                spacing: Style.marginXS
 
                 NText {
                   text: "Payouts"
@@ -475,7 +478,7 @@ Item {
               Flickable {
                 anchors {
                   fill: parent
-                  margins: 8
+                  margins: Style.marginM
                 }
                 contentHeight: symbolList.implicitHeight
                 clip: true
@@ -483,7 +486,7 @@ Item {
                 ColumnLayout {
                   id: symbolList
                   width: parent.width
-                  spacing: 4
+                  spacing: Style.marginXS
 
                   NText {
                     text: "All symbols"
