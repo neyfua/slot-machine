@@ -4,21 +4,21 @@ import qs.Services.UI
 import qs.Widgets
 
 NIconButtonHot {
-    property ShellScreen screen
-    property var pluginApi: null
+  property ShellScreen screen
+  property var pluginApi: null
 
-    icon: "brand-mastercard"
-    tooltipText: "Slot Machine"
+  icon: "brand-mastercard"
+  tooltipText: "Slot Machine"
 
-    onClicked: {
-        if (pluginApi) {
-            pluginApi.togglePanel(screen);
-        }
+  onClicked: {
+    if (pluginApi) {
+      pluginApi.togglePanel(screen);
     }
+  }
 
-    onRightClicked: {
-        if (pluginApi && pluginApi.manifest) {
-            BarService.openPluginSettings(screen, pluginApi.manifest);
-        }
+  onRightClicked: {
+    if (pluginApi && pluginApi.manifest) {
+      BarService.openPluginSettings(screen, pluginApi.manifest);
     }
+  }
 }
