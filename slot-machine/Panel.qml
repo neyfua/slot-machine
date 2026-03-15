@@ -78,6 +78,8 @@ Item {
             flashCount = 0;
             flashActive = true;
             flashTimer.restart();
+            root.winDelayActive = true;
+            winDelayTimer.restart();
         } else {
             flashActive = false;
         }
@@ -108,6 +110,17 @@ Item {
         interval: 3200
         onTriggered: {
             root.jackpotActive = false;
+        }
+    }
+
+    property bool winDelayActive: false
+
+    Timer {
+        id: winDelayTimer
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            root.winDelayActive = false;
         }
     }
 
@@ -375,9 +388,9 @@ Item {
                                     return "Spinning...";
                                 return "SPIN  (-1 credit)";
                             }
-                            backgroundColor: (!root.spinning && root.credits > 0) ? Color.mPrimary : Color.mSurfaceVariant
-                            textColor: (!root.spinning && root.credits > 0) ? Color.mOnPrimary : Color.mOnSurfaceVariant
-                            enabled: !root.spinning && root.credits > 0
+                            backgroundColor: (!root.spinning && !root.winDelayActive && root.credits > 0) ? Color.mPrimary : Color.mSurfaceVariant
+                            textColor: (!root.spinning && !root.winDelayActive && root.credits > 0) ? Color.mOnPrimary : Color.mOnSurfaceVariant
+                            enabled: !root.spinning && !root.winDelayActive && root.credits > 0
                             onClicked: {
                                 if (root.machine)
                                     root.machine.spin();
