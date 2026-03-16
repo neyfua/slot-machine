@@ -32,7 +32,7 @@ Item {
   readonly property var machine: pluginApi?.mainInstance ?? null
   readonly property bool spinning: machine?.spinning ?? false
   readonly property int credits: machine?.credits ?? 0
-  readonly property string lastResult: machine?.lastResult ?? ""
+  readonly property var lastResult: machine?.lastResult ?? SPIN
   readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int centerReel: machine?.reel1 ?? 0
@@ -67,7 +67,7 @@ Item {
   property int winFlashCount: 0
 
   onSpinSerialChanged: {
-    if (lastResult === "win" || lastResult === "smallwin" || lastResult === "jackpot") {
+    if (lastGain > 0) {
       winFlashCount = 0;
       winFlash = false;
       winFlashTimer.restart();
