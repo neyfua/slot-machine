@@ -10,7 +10,7 @@ Item {
   property var pluginApi: null
 
   // Slot symbols
-  readonly property int cloverGain: 1
+  readonly property int cloverGain: 2
   readonly property var symbols: [
     // Common
     {
@@ -44,17 +44,17 @@ Item {
       gain: 4
     },
     {
+      icon: "diamond-filled",
+      label: "Diamond",
+      weight: 8,
+      gain: 6
+    },
+    {
       icon: "clover-filled",
       label: "Clover",
       color: "lightgreen",
-      weight: 8,
-      gain: cloverGain
-    },
-    {
-      icon: "diamond-filled",
-      label: "Diamond",
       weight: 6,
-      gain: 5
+      gain: cloverGain
     },
     // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
     {
@@ -62,7 +62,7 @@ Item {
       label: "7",
       color: "#FFD700",
       weight: 4,
-      gain: 8
+      gain: 12
     }
   ]
 
