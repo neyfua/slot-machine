@@ -12,58 +12,58 @@ Item {
   // Slot symbols
   readonly property int cloverGain: 1
   readonly property var symbols: [
-      // Common
-      {
-          icon: "poo-filled",
-          label: "Poo",
-          weight: 21,
-          gain: 0
-      },
-      {
-          icon: "cherry-filled",
-          label: "Cherry",
-          weight: 19,
-          gain: 1
-      },
-      {
-          icon: "lemon-2-filled",
-          label: "Lemon",
-          weight: 16,
-          gain: 2
-      },
-      {
-          icon: "melon-filled",
-          label: "Melon",
-          weight: 14,
-          gain: 3
-      },
-      {
-          icon: "bell-filled",
-          label: "Bell",
-          weight: 12,
-          gain: 4
-      },
-      {
-          icon: "clover-filled",
-          label: "Clover",
-          color: "lightgreen",
-          weight: 8,
-          gain: cloverGain
-      },
-      {
-          icon: "diamond-filled",
-          label: "Diamond",
-          weight: 6,
-          gain: 5
-      },
-      // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
-      {
-          icon: "play-card-7-filled",
-          label: "7",
-          color: "#FFD700",
-          weight: 4,
-          gain: 8
-      }
+    // Common
+    {
+      icon: "poo-filled",
+      label: "Poo",
+      weight: 21,
+      gain: 0
+    },
+    {
+      icon: "cherry-filled",
+      label: "Cherry",
+      weight: 19,
+      gain: 1
+    },
+    {
+      icon: "lemon-2-filled",
+      label: "Lemon",
+      weight: 16,
+      gain: 2
+    },
+    {
+      icon: "melon-filled",
+      label: "Melon",
+      weight: 14,
+      gain: 3
+    },
+    {
+      icon: "bell-filled",
+      label: "Bell",
+      weight: 12,
+      gain: 4
+    },
+    {
+      icon: "clover-filled",
+      label: "Clover",
+      color: "lightgreen",
+      weight: 8,
+      gain: cloverGain
+    },
+    {
+      icon: "diamond-filled",
+      label: "Diamond",
+      weight: 6,
+      gain: 5
+    },
+    // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
+    {
+      icon: "play-card-7-filled",
+      label: "7",
+      color: "#FFD700",
+      weight: 4,
+      gain: 8
+    }
   ]
 
     /* Gain table :
@@ -105,14 +105,14 @@ Item {
 
   // Weighted random pick
   function weightedPick() {
-      var r = Math.random() * totalWeight;
-      var acc = 0;
-      for (var j = 0; j < symbols.length; j++) {
-          acc += symbols[j].weight;
-          if (r < acc)
-              return j;
-      }
-      return symbols.length - 1;
+    var r = Math.random() * totalWeight;
+    var acc = 0;
+    for (var j = 0; j < symbols.length; j++) {
+      acc += symbols[j].weight;
+      if (r < acc)
+        return j;
+    }
+    return symbols.length - 1;
   }
 
   // Spin
@@ -199,13 +199,13 @@ Item {
     }
 
     if (gain === 0){
-        // Do not override poowin here
-        result = result || "loss";
+      // Do not override poowin here
+      result = result || "loss";
     } else {
-        credits += gain;
-        totalWins += 1;
-        winDelayActive = true;
-        winDelayTimer.restart();
+      credits += gain;
+      totalWins += 1;
+      winDelayActive = true;
+      winDelayTimer.restart();
     }
 
     spinning = false;
