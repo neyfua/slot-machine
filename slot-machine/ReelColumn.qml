@@ -70,12 +70,7 @@ Rectangle {
         var syms = reel.symbols;
         if (!syms || syms.length === 0)
           return Color.mOnSurface;
-        var lbl = syms[reel.shown]?.label ?? "";
-        if (lbl === "7")
-          return "#FFD700";
-        if (reel.isWin && reel.flashActive)
-          return Color.mPrimary;
-        return Color.mOnSurface;
+        return syms[reel.shown]?.color ?? (reel.isWin && reel.flashActive ? Color.mPrimary : Color.mOnSurface);
       }
       pointSize: Style.fontSizeXL
 
