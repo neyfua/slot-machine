@@ -33,6 +33,7 @@ Item {
   readonly property bool spinning: machine?.spinning ?? false
   readonly property int credits: machine?.credits ?? 0
   readonly property string lastResult: machine?.lastResult ?? ""
+  readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int centerReel: machine?.reel1 ?? 0
 
@@ -137,10 +138,7 @@ Item {
         color: {
           if (root.winFlash && root.lastResult === "jackpot")
             return "#1a1a2e";
-          var syms = root.machine?.symbols;
-          if (syms && syms[root.centerReel]?.label === "7")
-            return "#FFD700";
-          return root.iconColor;
+          return root.machine?.symbols[root.centerReel]?.color ?? root.iconColor;
         }
         pointSize: root.barFontSize
       }
