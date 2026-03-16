@@ -14,7 +14,8 @@ Item {
 
   // Height adapts per tab: Spin tab is compact, Paytable tab is taller
   property real contentPreferredWidth: 400 * Style.uiScaleRatio
-  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 640 * Style.uiScaleRatio
+  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 621 * Style.uiScaleRatio
+
 
   anchors.fill: parent
 
