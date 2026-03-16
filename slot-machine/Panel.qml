@@ -14,7 +14,7 @@ Item {
 
   // Height adapts per tab: Spin tab is compact, Paytable tab is taller
   property real contentPreferredWidth: 400 * Style.uiScaleRatio
-  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 579 * Style.uiScaleRatio
+  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 640 * Style.uiScaleRatio
 
   anchors.fill: parent
 
@@ -77,7 +77,7 @@ Item {
   property bool jackpotActive: false
 
   onSpinSerialChanged: {
-    if (lastGain !== 0) {
+    if (lastGain > 0) {
       flashCount = 0;
       flashActive = true;
       flashTimer.restart();
@@ -315,8 +315,10 @@ Item {
                   return Color.mSurfaceVariant;
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
-                if (root.lastGain !== 0)
+                if (root.lastGain > 0)
                   return root.withClovers ? "lightgreen" : Color.mPrimary;
+                if (root.lastGain < 0)
+                  return "indianred";
                 return Color.mSurfaceVariant;
               }
               Behavior on color {
@@ -325,7 +327,7 @@ Item {
                 }
               }
 
-              border.color: root.jackpotActive ? "#FFD700" : (root.withClovers ? "lightgreen" : Style.capsuleBorderColor)
+              border.color: root.jackpotActive ? "#FFD700" : Style.capsuleBorderColor
               border.width: root.jackpotActive ? 3 : Style.capsuleBorderWidth
 
               RowLayout {
@@ -337,7 +339,7 @@ Item {
                   symbolIndex: root.reel0
                   symbols: root.symbols
                   isSpinning: root.reel0Spinning
-                  isWin: root.lastGain !== 0
+                  isWin: root.lastGain > 0
                   flashActive: root.flashActive
                 }
                 ReelColumn {
@@ -345,7 +347,7 @@ Item {
                   symbolIndex: root.reel1
                   symbols: root.symbols
                   isSpinning: root.reel1Spinning
-                  isWin: root.lastGain !== 0
+                  isWin: root.lastGain > 0
                   flashActive: root.flashActive
                 }
                 ReelColumn {
@@ -353,7 +355,7 @@ Item {
                   symbolIndex: root.reel2
                   symbols: root.symbols
                   isSpinning: root.reel2Spinning
-                  isWin: root.lastGain !== 0
+                  isWin: root.lastGain > 0
                   flashActive: root.flashActive
                 }
               }
@@ -381,8 +383,17 @@ Item {
                 if (root.lastResult === "poowin")
                     return "Poo Poo Poo! +" + credits;
 
-                if (root.lastResult === "loss")
-                  return "No match. Try again!";
+                if (root.lastResult === "bombloss")
+                  return "Boom Boom Pow! " + credits;
+
+                if (root.lastResult === "loss") {
+                  if (root.lastGain < 0)
+                    return "Boom ! " + credits
+                  else if (root.withClovers)
+                    return "Balanced as all things should be!"
+                  else
+                    return "No match. Try again!";
+                }
                 return "Press SPIN to play";
               }
               color: {
@@ -390,10 +401,12 @@ Item {
                     return Color.mOnSurfaceVariant
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
-                if (root.withClovers)
+                if (root.withClovers && root.lastGain > 0)
                   return "lightgreen";
-                if (root.lastGain !== 0)
+                if (root.lastGain > 0)
                   return Color.mPrimary;
+                if (root.lastGain < 0)
+                  return "indianred";
                 return Color.mOnSurfaceVariant;
               }
               pointSize: root.lastResult === "jackpot" ? Style.fontSizeL : Style.fontSizeM
@@ -505,7 +518,7 @@ Item {
                         id: payoutRules2
                         rows: -1
                         columns: 2
-                        rowSpacing: 6
+                        rowSpacing: Style.marginS
                         Layout.alignment: Qt.AlignTop
 
                         NText {
@@ -547,6 +560,16 @@ Item {
                             pointSize: Style.fontSizeS
                         }
                         NText {
+                            text: "Triple Bomb"
+                            color: "indianred"
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Value * 5"
+                            color: "indianred"
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
                             text: "Three of a kind"
                             color: Color.mPrimary
                             pointSize: Style.fontSizeS
@@ -577,31 +600,24 @@ Item {
                             pointSize: Style.fontSizeS
                         }
                         NText {
-                            text: "Clover is a joker"
-                            color: Color.mOnSurface
+                            text: "Clover"
+                            color: "lightgreen"
                             pointSize: Style.fontSizeS
                         }
                         NText {
-                            text: "Clover value"
+                            text: "Joker + Value"
+                            color: "lightgreen"
 														pointSize: Style.fontSizeS
                         }
                         NText {
-                            text: ""
-                        }
-                        NText {
-                            text: "plus combination"
-                            color: Color.mOnSurface
+                            text: "Any bomb"
+                            color: "indianred"
                             pointSize: Style.fontSizeS
-														Layout.topMargin: -5
                         }
                         NText {
-                            text: ""
-                        }
-                        NText {
-                            text: "value (no jackpot)"
-                            color: Color.mOnSurface
+                            text: "Lose value"
+                            color: "indianred"
                             pointSize: Style.fontSizeS
-														Layout.topMargin: -10
                         }
                     }
                 }

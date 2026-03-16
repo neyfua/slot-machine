@@ -10,58 +10,64 @@ Item {
   property var pluginApi: null
 
   // Slot symbols
-  readonly property int cloverGain: 2
   readonly property var symbols: [
     // Common
     {
       icon: "poo-filled",
       label: "Poo",
-      weight: 21,
+      weight: 38,
       gain: 0
     },
     {
       icon: "cherry-filled",
       label: "Cherry",
-      weight: 19,
+      weight: 34,
       gain: 1
     },
     {
       icon: "lemon-2-filled",
       label: "Lemon",
-      weight: 16,
+      weight: 30,
       gain: 2
     },
     {
       icon: "melon-filled",
       label: "Melon",
-      weight: 14,
+      weight: 26,
       gain: 3
     },
     {
       icon: "bell-filled",
       label: "Bell",
-      weight: 12,
+      weight: 22,
       gain: 4
     },
     {
       icon: "diamond-filled",
       label: "Diamond",
-      weight: 8,
+      weight: 18,
       gain: 6
     },
     {
       icon: "clover-filled",
       label: "Clover",
       color: "lightgreen",
-      weight: 6,
-      gain: cloverGain
+      weight: 14,
+      gain: 2
+    },
+    {
+      icon: "bomb-filled",
+      label: "Bomb",
+      color: "indianred",
+      weight: 10,
+      gain: -1
     },
     // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
     {
       icon: "play-card-7-filled",
       label: "7",
       color: "#FFD700",
-      weight: 4,
+      weight: 8,
       gain: 12
     }
   ]
@@ -72,10 +78,12 @@ Item {
        Tree of a kind: Symbol gain * 2
 
        Clover is a joker:
-       1 clover               : cloverGain
-       1 clover  + 2 of a kind: cloverGain     + symbol Tree of a kind
-       2 clovers + 1 symbol   : cloverGain * 2 + symbol Tree of a kind
-       3 clovers              : cloverGain * 5
+       1 clover               : clover gain
+       1 clover  + 2 of a kind: clover gain     + symbol Tree of a kind
+       2 clovers + 1 symbol   : clover gain * 2 + symbol Tree of a kind
+       3 clovers              : clover gain * 5
+
+       Bomb is a malus and reduce gains by bom gain per bomb
     */
 
   // Game state
@@ -86,7 +94,7 @@ Item {
   property bool winDelayActive: false
   property bool withClovers: false // Did we win with or without clovers ?
   property int lastGain: 0
-  property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss"
+  property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss" | "bombloss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
   // Pre-picked results, revealed reel-by-reel as each stops
   property int pendingReel0: 0
@@ -163,7 +171,7 @@ Item {
 
     for (const [label, count] of Object.entries(symbolCount)) {
       const symbol = symbols.find(s => s.label === label);
-      let normalSymbol = symbol.label !== "Poo" && symbol.label !== "Clover";
+      let normalSymbol = symbol.label !== "Poo" && symbol.label !== "Clover" && symbol.label !== "Bomb";
       if (count === 3) { // 3 of a kind
         if (symbol.label === "7") { // Jackpot !!!
           gain += 77;
@@ -171,6 +179,9 @@ Item {
         } else if (symbol.label === "Clover") { // Special clover case
           gain += symbol.gain * 5;
           result = "win";
+        } else if (symbol.label === "Bomb") { // Special bomb case
+          gain += symbol.gain * 5;
+          result = "bombloss";
         } else { // Regular 3 of a kind
           gain += symbol.gain * 2;
           result = symbol.label !== "Poo" ? "win" : "poowin";
@@ -184,7 +195,6 @@ Item {
           result = "win"
         } else { // Regular 2 of a kind
           gain += symbol.gain;
-          result = "smallwin";
         }
       }
       // Special 3 of a kind : 2 clovers + 1 symbol
@@ -193,21 +203,24 @@ Item {
         result = "win"
       // Add any clover as a bonus
       } else if (symbol.label === "Clover") {
-        gain += count * cloverGain;
-        result = result || "smallwin";
+        gain += count * symbol.gain;
+      // Add each bomb as a malus
+      } else if (symbol.label === "Bomb") {
+        gain += count * symbol.gain;
       }
     }
 
-    if (gain === 0){
-      // Do not override poowin here
-      result = result || "loss";
-    } else {
-      credits += gain;
+    if (gain > 0){
+      result = result || "smallwin";
       totalWins += 1;
       winDelayActive = true;
       winDelayTimer.restart();
+    } else {
+      // Do not override poowin or bombloss here
+      result = result || "loss";
     }
 
+    credits += gain;
     spinning = false;
     lastResult = result;
     lastGain = gain;
