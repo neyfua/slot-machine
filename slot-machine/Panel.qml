@@ -518,7 +518,7 @@ Item {
                         id: payoutRules2
                         rows: -1
                         columns: 2
-                        rowSpacing: 6
+                        rowSpacing: Style.marginS
                         Layout.alignment: Qt.AlignTop
 
                         NText {
@@ -560,6 +560,16 @@ Item {
                             pointSize: Style.fontSizeS
                         }
                         NText {
+                            text: "Triple Bomb"
+                            color: "indianred"
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
+                            text: "Value * 5"
+                            color: "indianred"
+                            pointSize: Style.fontSizeS
+                        }
+                        NText {
                             text: "Three of a kind"
                             color: Color.mPrimary
                             pointSize: Style.fontSizeS
@@ -590,31 +600,24 @@ Item {
                             pointSize: Style.fontSizeS
                         }
                         NText {
-                            text: "Clover is a joker"
-                            color: Color.mOnSurface
+                            text: "Clover"
+                            color: "lightgreen"
                             pointSize: Style.fontSizeS
                         }
                         NText {
-                            text: "Clover value"
+                            text: "Joker + Value"
+                            color: "lightgreen"
 														pointSize: Style.fontSizeS
                         }
                         NText {
-                            text: ""
-                        }
-                        NText {
-                            text: "plus combination"
-                            color: Color.mOnSurface
+                            text: "Any bomb"
+                            color: "indianred"
                             pointSize: Style.fontSizeS
-														Layout.topMargin: -5
                         }
                         NText {
-                            text: ""
-                        }
-                        NText {
-                            text: "value (no jackpot)"
-                            color: Color.mOnSurface
+                            text: "Lose value"
+                            color: "indianred"
                             pointSize: Style.fontSizeS
-														Layout.topMargin: -10
                         }
                     }
                 }
