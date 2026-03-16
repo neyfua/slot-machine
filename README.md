@@ -82,5 +82,6 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 - Thanks [Coin Flip](https://noctalia.dev/plugins/coin-flip/) plugin from Noctalia's official plugins repo for this inspiration
 - Thanks [Noctalia docs](https://docs.noctalia.dev/) for the guides/examples
+- Thanks [tmarti2](https://github.com/tmarti2) for the rework on gains and probabilities logic
 - Thanks other Noctalia plugins for the references
 - Thanks Claude being my greatest partner in this time-wasted simple project (you and me was so ass ngl)
