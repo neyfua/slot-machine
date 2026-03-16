@@ -372,6 +372,8 @@ Item {
                 return "Press SPIN to play";
               }
               color: {
+								if (root.spinning)
+									return Color.mOnSurfaceVariant
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
                 if (root.lastResult === "win" || root.lastResult === "smallwin")
