@@ -657,7 +657,7 @@ Item {
                         color: Color.mSurface
 
                         Rectangle {
-                          width: parent.width * (modelData.weight / root.totalWeight85)
+                          width: parent.width * (modelData.weight / root.totalWeight)
                           height: parent.height
                           radius: parent.radius
                           color: modelData?.color ?? Color.mPrimary
