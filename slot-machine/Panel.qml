@@ -14,7 +14,7 @@ Item {
 
   // Height adapts per tab: Spin tab is compact, Paytable tab is taller
   property real contentPreferredWidth: 400 * Style.uiScaleRatio
-  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 600 * Style.uiScaleRatio
+  property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 579 * Style.uiScaleRatio
 
   anchors.fill: parent
 
@@ -449,12 +449,13 @@ Item {
                         left: parent.left
                         right: parent.right
                         top: parent.top
-                        margins: 8
+                        margins: Style.marginM
                     }
-                    spacing: 20
+                    spacing: Style.marginL
                     ColumnLayout {
                         id: payoutRules
-                        spacing: 4
+                        spacing: Style.marginS
+                        Layout.alignment: Qt.AlignTop
 
                         NText {
                             text: "Symbol values"
@@ -490,6 +491,8 @@ Item {
                                     pointSize: Style.fontSizeS
                                     color: modelData?.color ?? Color.mOnSurface
                                     font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
+                                    horizontalAlignment: Text.AlignHCenter
+                                    Layout.preferredWidth: 25 * Style.uiScaleRatio
                                 }
                             }
                         }
@@ -502,7 +505,8 @@ Item {
                         id: payoutRules2
                         rows: -1
                         columns: 2
-                        rowSpacing: 4
+                        rowSpacing: 6
+                        Layout.alignment: Qt.AlignTop
 
                         NText {
                             text: "Combinations"
@@ -579,6 +583,7 @@ Item {
                         }
                         NText {
                             text: "Clover value"
+														pointSize: Style.fontSizeS
                         }
                         NText {
                             text: ""
@@ -587,6 +592,7 @@ Item {
                             text: "plus combination"
                             color: Color.mOnSurface
                             pointSize: Style.fontSizeS
+														Layout.topMargin: -5
                         }
                         NText {
                             text: ""
@@ -595,6 +601,7 @@ Item {
                             text: "value (no jackpot)"
                             color: Color.mOnSurface
                             pointSize: Style.fontSizeS
+														Layout.topMargin: -10
                         }
                     }
                 }
