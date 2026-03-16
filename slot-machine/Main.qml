@@ -163,6 +163,7 @@ Item {
 
     for (const [label, count] of Object.entries(symbolCount)) {
       const symbol = symbols.find(s => s.label === label);
+      let normalSymbol = symbol.label !== "Poo" && symbol.label !== "Clover";
       if (count === 3) { // 3 of a kind
         if (symbol.label === "7") { // Jackpot !!!
           gain += 77;
@@ -176,31 +177,29 @@ Item {
         }
         break; // Nothing more to compute
       }
-        // 2 of a kind, clovers count as jokers here
-      else if (symbol.label !== "Clover" && count === 2) {
+      // 2 of a kind, clovers count as jokers here
+      else if (normalSymbol && count === 2) {
         if (clovers === 1) { // Becomes a 3 of a kind
           gain += symbol.gain * 2;
-          result = symbol.label !== "Poo" ? "win" : "smallwin"
+          result = "win"
         } else { // Regular 2 of a kind
           gain += symbol.gain;
-          result = symbol.label !== "Poo" ? "smallwin" : "lose";
+          result = "smallwin";
         }
-        break; // Nothing more to compute
       }
       // Special 3 of a kind : 2 clovers + 1 symbol
-      else if (symbol.label !== "Clover" && clovers === 2) {
+      else if (normalSymbol && clovers === 2) {
         gain += symbol.gain * 2;
-        result = symbol.label !== "Poo" ? "win" : "smallwin"
-        break; // Nothing more to compute
-      }
-    }
-
-    if (clovers > 0 && clovers < 3){
-        gain += clovers * cloverGain;
+        result = "win"
+      // Add any clover as a bonus
+      } else if (symbol.label = "Clovers") {
+        gain += count * cloverGain;
         result = result || "smallwin";
+      }
     }
 
     if (gain === 0){
+        // Do not override poowin here
         result = result || "loss";
     } else {
         credits += gain;
