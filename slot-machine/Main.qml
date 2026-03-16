@@ -192,7 +192,7 @@ Item {
         gain += symbol.gain * 2;
         result = "win"
       // Add any clover as a bonus
-      } else if (symbol.label = "Clovers") {
+      } else if (symbol.label === "Clover") {
         gain += count * cloverGain;
         result = result || "smallwin";
       }
