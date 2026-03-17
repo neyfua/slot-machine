@@ -52,21 +52,42 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ## Previews
 
-- Normal spin:
+- Paytable
 
-![Spin](Assets/spin.png)
+![Paytable](Assets/paytable.png)
 
-- Two of a Kind:
+<details>
+<summary>Screenshots</summary>
+
+- No match. Try again!
+
+![No Match](Assets/no_match.png)
+
+- Boom!
+
+![Bomb](Assets/bomb.png)
+
+- Lucky you!
+
+![Lucky you](Assets/lucky_you.png)
+
+- Two of a kind!
 
 ![Two of a Kind](Assets/two_of_a_kind.png)
 
-- Winner:
+- Winner!
 
 ![Winner](Assets/winner.png)
 
-- JACKPOT HAKARI TUCA DONKA SKIBIDI DOP DOP YES YES:
+- Lucky winner!
+
+![Lucky winner](Assets/lucky_winner.png)
+
+- JACKPOT HAKARI TUCA DONKA SKIBIDI DOP DOP YES YES
 
 ![Jackpot](Assets/jackpot.png)
+
+</details>
 
 ## Requirements
 
