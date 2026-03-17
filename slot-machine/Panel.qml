@@ -389,7 +389,7 @@ Item {
 
                 if (root.lastResult === "loss") {
                   if (root.lastGain < 0)
-                    return "Boom ! " + credits
+                    return "Boom! " + credits
                   else if (root.withClovers)
                     return "Balanced as all things should be!"
                   else
@@ -421,7 +421,7 @@ Item {
                   return "No credits - hit Reset Credits to keep playing!";
                 if (root.spinning)
                   return "Spinning...";
-                return "SPIN  (-1 credit)";
+                return "SPIN (-1 credit)";
               }
               backgroundColor: (!root.spinning && !root.winDelayActive && root.credits > 0) ? Color.mPrimary : Color.mSurfaceVariant
               textColor: (!root.spinning && !root.winDelayActive && root.credits > 0) ? Color.mOnPrimary : Color.mOnSurfaceVariant
