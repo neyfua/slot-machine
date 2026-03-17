@@ -19,7 +19,7 @@ Rectangle {
   radius: Style.radiusM
   clip: true
 
-  border.color: isWin && flashActive ? Color.mPrimary : Style.capsuleBorderColor
+  border.color: isWin && flashActive ? Color.mOnPrimary : Style.capsuleBorderColor
   border.width: isWin && flashActive ? 2 : Style.capsuleBorderWidth
 
   Behavior on border.color {
