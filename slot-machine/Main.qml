@@ -12,55 +12,55 @@ Item {
   // Slot symbols
   readonly property var symbols: [
     // Common
-		{
-			icon: "bomb-filled",
-			label: "Bomb",
-			color: "indianred",
-			weight: 53,
-			gain: -1
-		},
     {
       icon: "poo-filled",
       label: "Poo",
-      weight: 50,
+      weight: 40,
       gain: 0
     },
     {
       icon: "melon-filled",
       label: "Melon",
-      weight: 46,
+      weight: 36,
       gain: 1
     },
 		{
 			icon: "lemon-2-filled",
 			label: "Lemon",
-			weight: 40,
+			weight: 29,
 			gain: 2
 		},
 		{
 			icon: "apple-filled",
 			label: "Apple",
-			weight: 36,
+			weight: 20,
 			gain: 3
 		},
     {
       icon: "cherry-filled",
       label: "Cherry",
-      weight: 30,
+      weight: 17,
       gain: 4
     },
-    {
-      icon: "diamond-filled",
-      label: "Diamond",
-			color: "lightblue",
-      weight: 16,
-      gain: 5
-    },
+		{
+			icon: "bomb-filled",
+			label: "Bomb",
+			color: "indianred",
+			weight: 14,
+			gain: -1
+		},
 		{
 			icon: "clover-filled",
 			label: "Clover",
 			color: "lightgreen",
-			weight: 10,
+			weight: 7,
+			gain: 2
+		},
+		{
+			icon: "diamond-filled",
+			label: "Diamond",
+			color: "lightblue",
+			weight: 11,
 			gain: 6
 		},
     // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
