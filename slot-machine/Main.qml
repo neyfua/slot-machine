@@ -96,6 +96,7 @@ Item {
   property int lastGain: 0
   property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss" | "bombloss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
+  property bool ipcSpin: false // true when spin was triggered by IPC, cleared after spinSerial updates
   // Pre-picked results, revealed reel-by-reel as each stops
   property int pendingReel0: 0
   property int pendingReel1: 0
@@ -225,6 +226,8 @@ Item {
     lastResult = result;
     lastGain = gain;
     withClovers = clovers !== 0;
+    var wasIpcSpin = ipcSpin;
+    ipcSpin = false;
     spinSerial += 1;
 
     saveState();
@@ -333,6 +336,7 @@ Item {
         return;
       if (root.winDelayActive)
         return;
+      root.ipcSpin = true;
       if (pluginApi.panelOpenScreen) {
         // Panel already open — spin immediately
         root.spin();
