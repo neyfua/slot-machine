@@ -63,17 +63,33 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ![No Match](Assets/no_match.png)
 
+- Two Poo Poo!
+
+![Two Poo Poo](Assets/two_poo_poo.png)
+
 - Poo Poo Poo!
 
 ![Poo Poo Poo](Assets/poo_poo_poo.png)
+
+- Two Poo Boom!
+
+![Two Poo Boom](Assets/two_poo_boom.png)
 
 - Boom!
 
 ![Bomb](Assets/bomb.png)
 
+- Boom Boom Pow!
+
+![Boom Boom Pow](Assets/boom_boom_pow.png)
+
 - Lucky you!
 
 ![Lucky you](Assets/lucky_you.png)
+
+- Lucky winner!
+
+![Lucky winner](Assets/lucky_winner.png)
 
 - Two of a kind!
 
@@ -83,9 +99,13 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ![Winner](Assets/winner.png)
 
-- Lucky winner!
+- Double Diamond!
 
-![Lucky winner](Assets/lucky_winner.png)
+![Double Diamond](Assets/double_diamond.png)
+
+- Triple Diamond!
+
+![Triple Diamond](Assets/triple_diamond.png)
 
 - JACKPOT HAKARI TUCA DONKA SKIBIDI DOP DOP YES YES
 
