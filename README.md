@@ -63,6 +63,10 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ![No Match](Assets/no_match.png)
 
+- Poo Poo Poo!
+
+![Poo Poo Poo](Assets/poo_poo_poo.png)
+
 - Boom!
 
 ![Bomb](Assets/bomb.png)
