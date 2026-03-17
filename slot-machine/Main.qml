@@ -12,62 +12,63 @@ Item {
   // Slot symbols
   readonly property var symbols: [
     // Common
+		{
+			icon: "bomb-filled",
+			label: "Bomb",
+			color: "indianred",
+			weight: 53,
+			gain: -1
+		},
     {
       icon: "poo-filled",
       label: "Poo",
-      weight: 38,
+      weight: 50,
       gain: 0
-    },
-    {
-      icon: "cherry-filled",
-      label: "Cherry",
-      weight: 34,
-      gain: 1
-    },
-    {
-      icon: "lemon-2-filled",
-      label: "Lemon",
-      weight: 30,
-      gain: 2
     },
     {
       icon: "melon-filled",
       label: "Melon",
-      weight: 26,
-      gain: 3
+      weight: 46,
+      gain: 1
     },
+		{
+			icon: "lemon-2-filled",
+			label: "Lemon",
+			weight: 40,
+			gain: 2
+		},
+		{
+			icon: "apple-filled",
+			label: "Apple",
+			weight: 36,
+			gain: 3
+		},
     {
-      icon: "bell-filled",
-      label: "Bell",
-      weight: 22,
+      icon: "cherry-filled",
+      label: "Cherry",
+      weight: 30,
       gain: 4
     },
     {
       icon: "diamond-filled",
       label: "Diamond",
-      weight: 18,
-      gain: 6
+			color: "lightblue",
+      weight: 16,
+      gain: 5
     },
-    {
-      icon: "clover-filled",
-      label: "Clover",
-      color: "lightgreen",
-      weight: 14,
-      gain: 2
-    },
-    {
-      icon: "bomb-filled",
-      label: "Bomb",
-      color: "indianred",
-      weight: 10,
-      gain: -1
-    },
+		{
+			icon: "clover-filled",
+			label: "Clover",
+			color: "lightgreen",
+			weight: 10,
+			gain: 6
+		},
     // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
     {
       icon: "play-card-7-filled",
       label: "7",
-      color: "#FFD700",
-      weight: 8,
+      color: "yellow",
+      weight: 4,
       gain: 12
     }
   ]
@@ -93,9 +94,11 @@ Item {
   property bool spinning: false
   property bool winDelayActive: false
   property bool withClovers: false // Did we win with or without clovers ?
+	property bool withBombs: false
   property int lastGain: 0
   property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss" | "bombloss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
+  property int replayFlashSerial: 0 // increments to replay bar widget flash
   property bool ipcSpin: false // true when spin was triggered by IPC, cleared after spinSerial updates
   // Pre-picked results, revealed reel-by-reel as each stops
   property int pendingReel0: 0
@@ -169,6 +172,7 @@ Item {
     var result;
     let gain = 0;
     let clovers = symbolCount["Clover"] || 0;
+		let bombs = symbolCount["Bomb"] || 0;
 
     for (const [label, count] of Object.entries(symbolCount)) {
       const symbol = symbols.find(s => s.label === label);
@@ -185,7 +189,9 @@ Item {
           result = "bombloss";
         } else { // Regular 3 of a kind
           gain += symbol.gain * 2;
-          result = symbol.label !== "Poo" ? "win" : "poowin";
+          if (symbol.label === "Poo") result = "poowin";
+          else if (symbol.label === "Diamond") result = "diamondwin";
+          else result = "win";
         }
         break; // Nothing more to compute
       }
@@ -193,9 +199,10 @@ Item {
       else if (normalSymbol && count === 2) {
         if (clovers === 1) { // Becomes a 3 of a kind
           gain += symbol.gain * 2;
-          result = "win"
+          result = symbol.label === "Diamond" ? "diamondwin" : "win";
         } else { // Regular 2 of a kind
           gain += symbol.gain;
+          if (symbol.label === "Diamond") result = "diamondsmallwin";
         }
       }
       // Special 3 of a kind : 2 clovers + 1 symbol
@@ -211,13 +218,31 @@ Item {
       }
     }
 
+    // Clamp gain so credits never go below 0.
+    // If bombs would overdrain, cap the loss at what credits remain.
+    // credits here is already post-spin-cost (spin() deducted 1 before reels landed).
+    if (gain < 0 && credits + gain < 0) {
+      gain = -credits;
+    }
+
+		// Detect exactly 2 poos
+		if (!result && (symbolCount["Poo"] || 0) === 2) {
+			result = "twopoo";
+		}
+
+    // Detect exactly 2 bombs that drain you to 0 credits
+    if ((symbolCount["Bomb"] || 0) === 2 && credits + gain <= 0) {
+      gain = -credits;
+      result = "twobombbroke";
+    }
+
     if (gain > 0){
       result = result || "smallwin";
       totalWins += 1;
       winDelayActive = true;
       winDelayTimer.restart();
     } else {
-      // Do not override poowin or bombloss here
+      // Do not override poowin, twopoo, or bombloss here
       result = result || "loss";
     }
 
@@ -226,6 +251,7 @@ Item {
     lastResult = result;
     lastGain = gain;
     withClovers = clovers !== 0;
+		withBombs = bombs !== 0;
     var wasIpcSpin = ipcSpin;
     ipcSpin = false;
     spinSerial += 1;
@@ -242,12 +268,26 @@ Item {
     lastResult = "";
     lastGain = 0;
     withClovers = false;
+		withBombs = false;
     spinSerial = 0;
     saveState();
     ToastService.showNotice("Credits reset to 15");
   }
 
-  function do_stats(spins){
+	function saveState() {
+		if (!pluginApi)
+		return;
+		pluginApi.pluginSettings.credits = credits;
+		pluginApi.pluginSettings.totalSpins = totalSpins;
+		pluginApi.pluginSettings.totalWins = totalWins;
+		pluginApi.pluginSettings.reel0 = reel0;
+		pluginApi.pluginSettings.reel1 = reel1;
+		pluginApi.pluginSettings.reel2 = reel2;
+		pluginApi.saveSettings();
+	}
+
+	// Functions for debugging, development purposes
+  function doStats(spins){
     let beforeCredits = credits;
     console.log("Before: ", beforeCredits);
     for (var i = 0; i < spins; i++){
@@ -267,17 +307,22 @@ Item {
     resetCredits();
   }
 
-  function saveState() {
-    if (!pluginApi)
-      return;
-    pluginApi.pluginSettings.credits = credits;
-    pluginApi.pluginSettings.totalSpins = totalSpins;
-    pluginApi.pluginSettings.totalWins = totalWins;
-    pluginApi.pluginSettings.reel0 = reel0;
-    pluginApi.pluginSettings.reel1 = reel1;
-    pluginApi.pluginSettings.reel2 = reel2;
-    pluginApi.saveSettings();
-  }
+	function forceResult(r0: int, r1: int, r2: int) {
+		if (spinning) return;
+		pendingReel0 = r0;
+		pendingReel1 = r1;
+		pendingReel2 = r2;
+		spinning = true;
+		credits -= 1;
+		totalSpins += 1;
+		spinTimer.restart();
+	}
+
+	function setCredits(amount: int) {
+		if (spinning) return;
+		credits = amount;
+		saveState();
+	}
 
   // Staggered reel timers (live in Main so they work panel-open or closed)
   // Reel 0 stops first, then 1, then 2. Each reveals its result on stop.
@@ -361,9 +406,21 @@ Item {
       root.resetCredits();
     }
 
-    function do_stats(spins: int) {
-      root.do_stats(spins);
+    function doStats(spins: int) {
+      root.doStats(spins);
     }
+
+		function forceResult(r0: int, r1: int, r2: int) {
+			root.forceResult(r0, r1, r2);
+		}
+
+		function setCredits(amount: int) {
+			root.setCredits(amount);
+		}
+
+		function replayFlash() {
+			root.replayFlashSerial += 1;
+		}
   }
 
   Component.onCompleted: {

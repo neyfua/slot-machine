@@ -28,6 +28,7 @@ Item {
   readonly property bool spinning: machine?.spinning ?? false
   readonly property string lastResult: machine?.lastResult ?? ""
   readonly property bool withClovers: machine?.withClovers ?? false
+	readonly property bool withBombs: machine?.withBombs ?? false
   readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int credits: machine?.credits ?? 0
@@ -316,6 +317,8 @@ Item {
                   return Color.mSurfaceVariant;
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
+                if (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")
+                  return "lightblue";
                 if (root.lastGain > 0)
                   return root.withClovers ? "lightgreen" : Color.mPrimary;
                 if (root.lastGain < 0)
@@ -328,8 +331,8 @@ Item {
                 }
               }
 
-              border.color: root.jackpotActive ? "#FFD700" : Style.capsuleBorderColor
-              border.width: root.jackpotActive ? 3 : Style.capsuleBorderWidth
+              border.color: root.jackpotActive ? "#FFD700" : ((root.flashActive && (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")) ? Color.mOnPrimary : Style.capsuleBorderColor)
+              border.width: (root.jackpotActive || (root.flashActive && (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin"))) ? 3 : Style.capsuleBorderWidth
 
               RowLayout {
                 anchors.centerIn: parent
@@ -376,16 +379,32 @@ Item {
                 if (root.lastResult === "win")
                     return "Winner! +" + credits;
 
+                if (root.lastResult === "diamondwin")
+                    return "Triple Diamond! +" + credits;
+                if (root.lastResult === "diamondsmallwin")
+                    return "Double Diamond! +" + credits;
+
                 if (root.lastResult === "smallwin" && root.withClovers)
                     return "Lucky you! +" + credits;
                 if (root.lastResult === "smallwin")
                     return "Two of a kind! +" + credits;
 
+								if (root.lastResult === "twopoo" && !root.withBombs)
+										return "Two Poo Poo! " + credits;
+								if (root.lastResult === "twopoo" && root.withBombs)
+										return "Two Poo Boom! " + credits;
                 if (root.lastResult === "poowin")
                     return "Poo Poo Poo! +" + credits;
 
+								if (root.lastResult === "twobombbroke")
+									return "Boom! Boom! 0 credits left!";
                 if (root.lastResult === "bombloss")
                   return "Boom Boom Pow! " + credits;
+
+                if (root.lastResult === "brokebombloss")
+                  return "Boom! Your credits are already at 0! -" + credits;
+                if (root.lastResult === "brokebombloss3")
+                  return "Boom Boom Pow! Your credits are already at 0! -" + credits;
 
                 if (root.lastResult === "loss") {
                   if (root.lastGain < 0)
@@ -402,11 +421,15 @@ Item {
                     return Color.mOnSurfaceVariant
                 if (root.lastResult === "jackpot")
                   return "#FFD700";
+                if (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")
+                  return "lightblue";
                 if (root.withClovers && root.lastGain > 0)
                   return "lightgreen";
                 if (root.lastGain > 0)
                   return Color.mPrimary;
                 if (root.lastGain < 0)
+                  return "indianred";
+                if (root.lastResult === "bombloss" || root.lastResult === "brokebombloss" || root.lastResult === "brokebombloss3" || root.lastResult === "twobombbroke")
                   return "indianred";
                 return Color.mOnSurfaceVariant;
               }
