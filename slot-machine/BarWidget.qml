@@ -36,6 +36,7 @@ Item {
   readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int centerReel: machine?.reel1 ?? 0
+  readonly property bool withClovers: machine?.withClovers ?? false
 
   // Plugin settings
   property var cfg: pluginApi?.pluginSettings || ({})
@@ -110,7 +111,7 @@ Item {
       if (root.winFlash && root.lastResult === "jackpot")
         return "#FFD700";
       if (root.winFlash && (root.lastResult === "win" || root.lastResult === "smallwin"))
-        return Color.mPrimary;
+        return root.withClovers ? "lightgreen" : Color.mPrimary;
       if (mouseArea.containsMouse)
         return Color.mHover;
       return Style.capsuleColor;
@@ -136,8 +137,8 @@ Item {
           return syms[root.centerReel]?.icon ?? "brand-mastercard";
         }
         color: {
-          if (root.winFlash && root.lastResult === "jackpot")
-            return "#1a1a2e";
+          if (root.winFlash)
+            return Color.mOnPrimary;
           return root.machine?.symbols[root.centerReel]?.color ?? root.iconColor;
         }
         pointSize: root.barFontSize
@@ -147,8 +148,8 @@ Item {
         visible: !root.isBarVertical && root.showCredits
         text: root.credits + "cr"
         color: {
-          if (root.winFlash && root.lastResult === "jackpot")
-            return "#1a1a2e";
+          if (root.winFlash)
+            return Color.mOnPrimary;
           return Color.mOnSurface;
         }
         pointSize: root.barFontSize
