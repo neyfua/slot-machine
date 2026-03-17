@@ -4,7 +4,7 @@
     {
       "id": "slot-machine",
       "name": "Slot Machine",
-      "version": "1.2.8",
+      "version": "1.2.9",
       "official": false,
       "author": "neyfua",
       "description": "A 777 slot machine in your bar. Spin for jackpots.",
@@ -15,7 +15,7 @@
         "Panel",
         "Fun"
       ],
-      "lastUpdated": "2026-03-17T09:22:58+07:00"
+      "lastUpdated": "2026-03-17T12:23:40+07:00"
     }
   ]
 }
