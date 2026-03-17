@@ -78,7 +78,7 @@ Item {
   property bool jackpotActive: false
 
   onSpinSerialChanged: {
-    if (lastGain > 0) {
+    if (lastGain > 0 && !machine?.ipcSpin) {
       flashCount = 0;
       flashActive = true;
       flashTimer.restart();
