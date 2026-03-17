@@ -35,6 +35,7 @@ Item {
   readonly property var lastResult: machine?.lastResult ?? SPIN
   readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
+  readonly property int replayFlashSerial: machine?.replayFlashSerial ?? 0
   readonly property int centerReel: machine?.reel1 ?? 0
   readonly property bool withClovers: machine?.withClovers ?? false
 
@@ -78,6 +79,13 @@ Item {
     }
   }
 
+  onReplayFlashSerialChanged: {
+    if (lastGain <= 0 && lastResult !== "jackpot") return;
+    winFlashCount = 0;
+    winFlash = false;
+    winFlashTimer.restart();
+  }
+
   Timer {
     id: winFlashTimer
     interval: 150
@@ -110,6 +118,8 @@ Item {
     color: {
       if (root.winFlash && root.lastResult === "jackpot")
         return "#FFD700";
+      if (root.winFlash && (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin"))
+        return "lightblue";
       if (root.winFlash && (root.lastResult === "win" || root.lastResult === "smallwin"))
         return root.withClovers ? "lightgreen" : Color.mPrimary;
       if (mouseArea.containsMouse)
