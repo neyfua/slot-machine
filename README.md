@@ -107,6 +107,10 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ![Triple Diamond](Assets/triple_diamond.png)
 
+- One away from glory!
+
+![One away from glory!](Assets/one_away_from_glory.png)
+
 - JACKPOT HAKARI TUCA DONKA SKIBIDI DOP DOP YES YES
 
 ![Jackpot](Assets/jackpot.png)
