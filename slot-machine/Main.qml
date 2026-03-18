@@ -24,45 +24,45 @@ Item {
       weight: 36,
       gain: 1
     },
-		{
-			icon: "lemon-2-filled",
-			label: "Lemon",
-			weight: 29,
-			gain: 2
-		},
-		{
-			icon: "apple-filled",
-			label: "Apple",
-			weight: 20,
-			gain: 3
-		},
+    {
+      icon: "lemon-2-filled",
+      label: "Lemon",
+      weight: 29,
+      gain: 2
+    },
+    {
+      icon: "apple-filled",
+      label: "Apple",
+      weight: 20,
+      gain: 3
+    },
     {
       icon: "cherry-filled",
       label: "Cherry",
       weight: 17,
       gain: 4
     },
-		{
-			icon: "bomb-filled",
-			label: "Bomb",
-			color: "indianred",
-			weight: 14,
-			gain: -1
-		},
-		{
-			icon: "clover-filled",
-			label: "Clover",
-			color: "lightgreen",
-			weight: 7,
-			gain: 2
-		},
-		{
-			icon: "diamond-filled",
-			label: "Diamond",
-			color: "lightblue",
-			weight: 11,
-			gain: 6
-		},
+    {
+      icon: "bomb-filled",
+      label: "Bomb",
+      color: "indianred",
+      weight: 14,
+      gain: -1
+    },
+    {
+      icon: "clover-filled",
+      label: "Clover",
+      color: "lightgreen",
+      weight: 7,
+      gain: 2
+    },
+    {
+      icon: "diamond-filled",
+      label: "Diamond",
+      color: "lightblue",
+      weight: 11,
+      gain: 6
+    },
     // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
     {
       icon: "play-card-7-filled",
@@ -73,19 +73,19 @@ Item {
     }
   ]
 
-    /* Gain table :
-       777: 77 credits
-       Two  of a kind: Symbol gain
-       Tree of a kind: Symbol gain * 2
+  /* Gain table :
+  777: 77 credits
+  Two  of a kind: Symbol gain
+  Tree of a kind: Symbol gain * 2
 
-       Clover is a joker:
-       1 clover               : clover gain
-       1 clover  + 2 of a kind: clover gain     + symbol Tree of a kind
-       2 clovers + 1 symbol   : clover gain * 2 + symbol Tree of a kind
-       3 clovers              : clover gain * 5
+  Clover is a joker:
+  1 clover               : clover gain
+  1 clover  + 2 of a kind: clover gain     + symbol Tree of a kind
+  2 clovers + 1 symbol   : clover gain * 2 + symbol Tree of a kind
+  3 clovers              : clover gain * 5
 
-       Bomb is a malus and reduce gains by bom gain per bomb
-    */
+  Bomb is a malus and reduce gains by bom gain per bomb
+  */
 
   // Game state
   property int reel0: pluginApi?.pluginSettings?.reel0 ?? 0
@@ -94,11 +94,11 @@ Item {
   property bool spinning: false
   property bool winDelayActive: false
   property bool withClovers: false // Did we win with or without clovers ?
-	property bool withBombs: false
+  property bool withBombs: false
   property int lastGain: 0
   property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss" | "bombloss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
-  property int replayFlashSerial: 0 // increments to replay bar widget flash
+  signal replayFlash  // replays the win flash animation
   property bool ipcSpin: false // true when spin was triggered by IPC, cleared after spinSerial updates
   // Pre-picked results, revealed reel-by-reel as each stops
   property int pendingReel0: 0
@@ -109,10 +109,10 @@ Item {
   property int totalWins: pluginApi?.pluginSettings?.totalWins ?? 0
 
   readonly property int totalWeight: {
-      var total = 0;
-      for (var i = 0; i < symbols.length; i++)
-          total += symbols[i].weight;
-      return total;
+    var total = 0;
+    for (var i = 0; i < symbols.length; i++)
+      total += symbols[i].weight;
+    return total;
   }
 
   // Weighted random pick
@@ -166,13 +166,13 @@ Item {
     // Count occurrences of each symbol
     const symbolCount = {};
     results.forEach(symbol => {
-      symbolCount[symbol.label] = (symbolCount[symbol.label] || 0) + 1;
-    });
+                      symbolCount[symbol.label] = (symbolCount[symbol.label] || 0) + 1;
+                    });
 
     var result;
     let gain = 0;
     let clovers = symbolCount["Clover"] || 0;
-		let bombs = symbolCount["Bomb"] || 0;
+    let bombs = symbolCount["Bomb"] || 0;
 
     for (const [label, count] of Object.entries(symbolCount)) {
       const symbol = symbols.find(s => s.label === label);
@@ -189,33 +189,37 @@ Item {
           result = "bombloss";
         } else { // Regular 3 of a kind
           gain += symbol.gain * 2;
-          if (symbol.label === "Poo") result = "poowin";
-          else if (symbol.label === "Diamond") result = "diamondwin";
-          else result = "win";
+          if (symbol.label === "Poo")
+            result = "poowin";
+          else if (symbol.label === "Diamond")
+            result = "diamondwin";
+          else
+            result = "win";
         }
         break; // Nothing more to compute
-      }
-      // 2 of a kind, clovers count as jokers here
-      else if (normalSymbol && count === 2) {
-        if (clovers === 1) { // Becomes a 3 of a kind
-          gain += symbol.gain * 2;
-          result = symbol.label === "Diamond" ? "diamondwin" : "win";
-        } else { // Regular 2 of a kind
-          gain += symbol.gain;
-          if (symbol.label === "Diamond") result = "diamondsmallwin";
-        }
-      }
-      // Special 3 of a kind : 2 clovers + 1 symbol
-      else if (normalSymbol && clovers === 2) {
-        gain += symbol.gain * 2;
-        result = "win"
-      // Add any clover as a bonus
-      } else if (symbol.label === "Clover") {
-        gain += count * symbol.gain;
-      // Add each bomb as a malus
-      } else if (symbol.label === "Bomb") {
-        gain += count * symbol.gain;
-      }
+      } else
+        // 2 of a kind, clovers count as jokers here
+        if (normalSymbol && count === 2) {
+          if (clovers === 1) { // Becomes a 3 of a kind
+            gain += symbol.gain * 2;
+            result = symbol.label === "Diamond" ? "diamondwin" : "win";
+          } else { // Regular 2 of a kind
+            gain += symbol.gain;
+            if (symbol.label === "Diamond")
+              result = "diamondsmallwin";
+          }
+        } else
+          // Special 3 of a kind : 2 clovers + 1 symbol
+          if (normalSymbol && clovers === 2) {
+            gain += symbol.gain * 2;
+            result = "win";
+            // Add any clover as a bonus
+          } else if (symbol.label === "Clover") {
+            gain += count * symbol.gain;
+            // Add each bomb as a malus
+          } else if (symbol.label === "Bomb") {
+            gain += count * symbol.gain;
+          }
     }
 
     // Clamp gain so credits never go below 0.
@@ -225,10 +229,14 @@ Item {
       gain = -credits;
     }
 
-		// Detect exactly 2 poos
-		if (!result && (symbolCount["Poo"] || 0) === 2) {
-			result = "twopoo";
-		}
+    // Detect exactly 2 poos
+    if (!result && (symbolCount["Poo"] || 0) === 2) {
+      result = "twopoo";
+    }
+
+    if (!result && (symbolCount["7"] || 0) === 2) {
+      result = "twoseven";
+    }
 
     // Detect exactly 2 bombs that drain you to 0 credits
     if ((symbolCount["Bomb"] || 0) === 2 && credits + gain <= 0) {
@@ -236,7 +244,7 @@ Item {
       result = "twobombbroke";
     }
 
-    if (gain > 0){
+    if (gain > 0) {
       result = result || "smallwin";
       totalWins += 1;
       winDelayActive = true;
@@ -251,7 +259,7 @@ Item {
     lastResult = result;
     lastGain = gain;
     withClovers = clovers !== 0;
-		withBombs = bombs !== 0;
+    withBombs = bombs !== 0;
     var wasIpcSpin = ipcSpin;
     ipcSpin = false;
     spinSerial += 1;
@@ -268,29 +276,29 @@ Item {
     lastResult = "";
     lastGain = 0;
     withClovers = false;
-		withBombs = false;
+    withBombs = false;
     spinSerial = 0;
     saveState();
     ToastService.showNotice("Credits reset to 15");
   }
 
-	function saveState() {
-		if (!pluginApi)
-		return;
-		pluginApi.pluginSettings.credits = credits;
-		pluginApi.pluginSettings.totalSpins = totalSpins;
-		pluginApi.pluginSettings.totalWins = totalWins;
-		pluginApi.pluginSettings.reel0 = reel0;
-		pluginApi.pluginSettings.reel1 = reel1;
-		pluginApi.pluginSettings.reel2 = reel2;
-		pluginApi.saveSettings();
-	}
+  function saveState() {
+    if (!pluginApi)
+      return;
+    pluginApi.pluginSettings.credits = credits;
+    pluginApi.pluginSettings.totalSpins = totalSpins;
+    pluginApi.pluginSettings.totalWins = totalWins;
+    pluginApi.pluginSettings.reel0 = reel0;
+    pluginApi.pluginSettings.reel1 = reel1;
+    pluginApi.pluginSettings.reel2 = reel2;
+    pluginApi.saveSettings();
+  }
 
-	// Functions for debugging, development purposes
-  function doStats(spins){
+  // Functions for debugging, development purposes
+  function doStats(spins) {
     let beforeCredits = credits;
     console.log("Before: ", beforeCredits);
-    for (var i = 0; i < spins; i++){
+    for (var i = 0; i < spins; i++) {
       pendingReel0 = weightedPick();
       pendingReel1 = weightedPick();
       pendingReel2 = weightedPick();
@@ -307,22 +315,24 @@ Item {
     resetCredits();
   }
 
-	function forceResult(r0: int, r1: int, r2: int) {
-		if (spinning) return;
-		pendingReel0 = r0;
-		pendingReel1 = r1;
-		pendingReel2 = r2;
-		spinning = true;
-		credits -= 1;
-		totalSpins += 1;
-		spinTimer.restart();
-	}
+  function forceResult(r0: int, r1: int, r2: int) {
+    if (spinning)
+      return;
+    pendingReel0 = r0;
+    pendingReel1 = r1;
+    pendingReel2 = r2;
+    spinning = true;
+    credits -= 1;
+    totalSpins += 1;
+    spinTimer.restart();
+  }
 
-	function setCredits(amount: int) {
-		if (spinning) return;
-		credits = amount;
-		saveState();
-	}
+  function setCredits(amount: int) {
+    if (spinning)
+      return;
+    credits = amount;
+    saveState();
+  }
 
   // Staggered reel timers (live in Main so they work panel-open or closed)
   // Reel 0 stops first, then 1, then 2. Each reveals its result on stop.
@@ -410,17 +420,17 @@ Item {
       root.doStats(spins);
     }
 
-		function forceResult(r0: int, r1: int, r2: int) {
-			root.forceResult(r0, r1, r2);
-		}
+    function forceResult(r0: int, r1: int, r2: int) {
+      root.forceResult(r0, r1, r2);
+    }
 
-		function setCredits(amount: int) {
-			root.setCredits(amount);
-		}
+    function setCredits(amount: int) {
+      root.setCredits(amount);
+    }
 
-		function replayFlash() {
-			root.replayFlashSerial += 1;
-		}
+    function replayFlash() {
+      root.replayFlash();
+    }
   }
 
   Component.onCompleted: {
