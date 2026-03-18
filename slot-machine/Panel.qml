@@ -16,7 +16,6 @@ Item {
   property real contentPreferredWidth: 400 * Style.uiScaleRatio
   property real contentPreferredHeight: activeTab === 0 ? 450 * Style.uiScaleRatio : 621 * Style.uiScaleRatio
 
-
   anchors.fill: parent
 
   readonly property var machine: pluginApi?.mainInstance ?? null
@@ -28,7 +27,7 @@ Item {
   readonly property bool spinning: machine?.spinning ?? false
   readonly property string lastResult: machine?.lastResult ?? ""
   readonly property bool withClovers: machine?.withClovers ?? false
-	readonly property bool withBombs: machine?.withBombs ?? false
+  readonly property bool withBombs: machine?.withBombs ?? false
   readonly property int lastGain: machine?.lastGain ?? 0
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int credits: machine?.credits ?? 0
@@ -93,6 +92,25 @@ Item {
       jackpotEndTimer.restart();
     } else {
       jackpotActive = false;
+    }
+  }
+
+  function doReplayFlash() {
+    if (lastGain <= 0)
+      return;
+    flashCount = 0;
+    flashActive = true;
+    flashTimer.restart();
+    if (lastResult === "jackpot") {
+      jackpotActive = true;
+      jackpotEndTimer.restart();
+    }
+  }
+
+  Connections {
+    target: root.machine
+    function onReplayFlash() {
+      root.doReplayFlash();
     }
   }
 
@@ -315,7 +333,7 @@ Item {
               color: {
                 if (!root.flashActive)
                   return Color.mSurfaceVariant;
-                if (root.lastResult === "jackpot")
+                if (root.lastResult === "jackpot" || root.lastResult === "twoseven")
                   return "#FFD700";
                 if (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")
                   return "lightblue";
@@ -330,9 +348,6 @@ Item {
                   duration: 60
                 }
               }
-
-              border.color: root.jackpotActive ? "#FFD700" : ((root.flashActive && (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")) ? Color.mOnPrimary : Style.capsuleBorderColor)
-              border.width: (root.jackpotActive || (root.flashActive && (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin"))) ? 3 : Style.capsuleBorderWidth
 
               RowLayout {
                 anchors.centerIn: parent
@@ -370,34 +385,37 @@ Item {
               text: {
                 var credits = root.lastGain + " credits!";
                 if (root.spinning)
-                    return "Spinning...";
+                  return "Spinning...";
+
+                if (root.lastResult === "twoseven")
+                  return "One away from glory! +" + credits;
                 if (root.lastResult === "jackpot")
-                    return "JACKPOT! +" + credits;
+                  return "JACKPOT! +" + credits;
 
                 if (root.lastResult === "win" && root.withClovers)
-                    return "Lucky winner! +" + credits;
+                  return "Lucky winner! +" + credits;
                 if (root.lastResult === "win")
-                    return "Winner! +" + credits;
+                  return "Winner! +" + credits;
 
                 if (root.lastResult === "diamondwin")
-                    return "Triple Diamond! +" + credits;
+                  return "Triple Diamond! +" + credits;
                 if (root.lastResult === "diamondsmallwin")
-                    return "Double Diamond! +" + credits;
+                  return "Double Diamond! +" + credits;
 
-                if (root.lastResult === "smallwin" && root.withClovers)
-                    return "Lucky you! +" + credits;
+                if (root.lastResult === "smallwin" && root.withClovers || root.lastResult === "twopoo" && root.withClovers)
+                  return "Lucky you! +" + credits;
                 if (root.lastResult === "smallwin")
-                    return "Two of a kind! +" + credits;
+                  return "Two of a kind! +" + credits;
 
-								if (root.lastResult === "twopoo" && !root.withBombs)
-										return "Two Poo Poo! " + credits;
-								if (root.lastResult === "twopoo" && root.withBombs)
-										return "Two Poo Boom! " + credits;
+                if (root.lastResult === "twopoo" && !root.withBombs && !root.withClovers)
+                  return "Two Poo Poo! " + credits;
+                if (root.lastResult === "twopoo" && root.withBombs)
+                  return "Two Poo Poo and Boom! " + credits;
                 if (root.lastResult === "poowin")
-                    return "Poo Poo Poo! +" + credits;
+                  return "Poo Poo Poo! +" + credits;
 
-								if (root.lastResult === "twobombbroke")
-									return "Boom! Boom! 0 credits left!";
+                if (root.lastResult === "twobombbroke")
+                  return "Boom! Boom! 0 credits left!";
                 if (root.lastResult === "bombloss")
                   return "Boom Boom Pow! " + credits;
 
@@ -408,9 +426,9 @@ Item {
 
                 if (root.lastResult === "loss") {
                   if (root.lastGain < 0)
-                    return "Boom! " + credits
+                    return "Boom! " + credits;
                   else if (root.withClovers)
-                    return "Balanced as all things should be!"
+                    return "Balanced as all things should be!";
                   else
                     return "No match. Try again!";
                 }
@@ -418,8 +436,8 @@ Item {
               }
               color: {
                 if (root.spinning)
-                    return Color.mOnSurfaceVariant
-                if (root.lastResult === "jackpot")
+                  return Color.mOnSurfaceVariant;
+                if (root.lastResult === "jackpot" || root.lastResult === "twoseven")
                   return "#FFD700";
                 if (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")
                   return "lightblue";
@@ -476,175 +494,175 @@ Item {
 
             // Payout rules
             Rectangle {
-                Layout.fillWidth: true
-                color: Color.mSurfaceVariant
-                radius: Style.radiusM
-                implicitHeight: payoutRules.implicitHeight + Style.marginM * 2
+              Layout.fillWidth: true
+              color: Color.mSurfaceVariant
+              radius: Style.radiusM
+              implicitHeight: payoutRules.implicitHeight + Style.marginM * 2
 
-                RowLayout {
-                    anchors {
-                        left: parent.left
-                        right: parent.right
-                        top: parent.top
-                        margins: Style.marginM
-                    }
-                    spacing: Style.marginL
-                    ColumnLayout {
-                        id: payoutRules
-                        spacing: Style.marginS
-                        Layout.alignment: Qt.AlignTop
-
-                        NText {
-                            text: "Symbol values"
-                            pointSize: Style.fontSizeS
-                            font.weight: Font.Bold
-                            color: Color.mOnSurface
-                            bottomPadding: 2
-                        }
-
-                        Repeater {
-                            model: root.symbols
-
-                            RowLayout {
-                                width: symbolList.width
-                                spacing: Style.marginS
-
-                                NIcon {
-                                    icon: modelData.icon
-                                    pointSize: Style.fontSizeM
-                                    color: modelData?.color ?? Color.mOnSurface
-                                }
-
-                                NText {
-                                    text: modelData.label
-                                    pointSize: Style.fontSizeS
-                                    color: modelData?.color ?? Color.mOnSurface
-                                    font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
-                                    Layout.fillWidth: true
-                                }
-
-                                NText {
-                                    text: modelData.gain
-                                    pointSize: Style.fontSizeS
-                                    color: modelData?.color ?? Color.mOnSurface
-                                    font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
-                                    horizontalAlignment: Text.AlignHCenter
-                                    Layout.preferredWidth: 25 * Style.uiScaleRatio
-                                }
-                            }
-                        }
-                    }
-                    NDivider {
-                        vertical: true
-                        Layout.fillHeight: true
-                    }
-                    GridLayout {
-                        id: payoutRules2
-                        rows: -1
-                        columns: 2
-                        rowSpacing: Style.marginS
-                        Layout.alignment: Qt.AlignTop
-
-                        NText {
-                            text: "Combinations"
-                            pointSize: Style.fontSizeS
-                            font.weight: Font.Bold
-                            color: Color.mOnSurface
-                            bottomPadding: 2
-                            Layout.fillWidth: true
-                        }
-
-                        NText {
-                            text: "Value"
-                            pointSize: Style.fontSizeS
-                            font.weight: Font.Bold
-                            color: Color.mOnSurface
-                            bottomPadding: 2
-                        }
-                        NText {
-                            text: "777"
-                            color: "#FFD700"
-                            pointSize: Style.fontSizeS
-                            font.weight: Font.Bold
-                        }
-                        NText {
-                            text: "77"
-                            color: "#FFD700"
-                            pointSize: Style.fontSizeS
-                            font.weight: Font.Bold
-                        }
-                        NText {
-                            text: "Triple Clover"
-                            color: "lightgreen"
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Value * 5"
-                            color: "lightgreen"
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Triple Bomb"
-                            color: "indianred"
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Value * 5"
-                            color: "indianred"
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Three of a kind"
-                            color: Color.mPrimary
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Value * 2"
-                            color: Color.mPrimary
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Two of a kind"
-                            color: Color.mOnSurface
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Value"
-                            color: Color.mOnSurface
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "No match"
-                            color: Color.mOnSurfaceVariant
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Lose (-1 credit)"
-                            color: Color.mOnSurfaceVariant
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Clover"
-                            color: "lightgreen"
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Joker + Value"
-                            color: "lightgreen"
-														pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Any bomb"
-                            color: "indianred"
-                            pointSize: Style.fontSizeS
-                        }
-                        NText {
-                            text: "Lose value"
-                            color: "indianred"
-                            pointSize: Style.fontSizeS
-                        }
-                    }
+              RowLayout {
+                anchors {
+                  left: parent.left
+                  right: parent.right
+                  top: parent.top
+                  margins: Style.marginM
                 }
+                spacing: Style.marginL
+                ColumnLayout {
+                  id: payoutRules
+                  spacing: Style.marginS
+                  Layout.alignment: Qt.AlignTop
+
+                  NText {
+                    text: "Symbol values"
+                    pointSize: Style.fontSizeS
+                    font.weight: Font.Bold
+                    color: Color.mOnSurface
+                    bottomPadding: 2
+                  }
+
+                  Repeater {
+                    model: root.symbols
+
+                    RowLayout {
+                      width: symbolList.width
+                      spacing: Style.marginS
+
+                      NIcon {
+                        icon: modelData.icon
+                        pointSize: Style.fontSizeM
+                        color: modelData?.color ?? Color.mOnSurface
+                      }
+
+                      NText {
+                        text: modelData.label
+                        pointSize: Style.fontSizeS
+                        color: modelData?.color ?? Color.mOnSurface
+                        font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
+                        Layout.fillWidth: true
+                      }
+
+                      NText {
+                        text: modelData.gain
+                        pointSize: Style.fontSizeS
+                        color: modelData?.color ?? Color.mOnSurface
+                        font.weight: modelData.label === "7" ? Font.Bold : Font.Normal
+                        horizontalAlignment: Text.AlignHCenter
+                        Layout.preferredWidth: 25 * Style.uiScaleRatio
+                      }
+                    }
+                  }
+                }
+                NDivider {
+                  vertical: true
+                  Layout.fillHeight: true
+                }
+                GridLayout {
+                  id: payoutRules2
+                  rows: -1
+                  columns: 2
+                  rowSpacing: Style.marginS
+                  Layout.alignment: Qt.AlignTop
+
+                  NText {
+                    text: "Combinations"
+                    pointSize: Style.fontSizeS
+                    font.weight: Font.Bold
+                    color: Color.mOnSurface
+                    bottomPadding: 2
+                    Layout.fillWidth: true
+                  }
+
+                  NText {
+                    text: "Value"
+                    pointSize: Style.fontSizeS
+                    font.weight: Font.Bold
+                    color: Color.mOnSurface
+                    bottomPadding: 2
+                  }
+                  NText {
+                    text: "777"
+                    color: "#FFD700"
+                    pointSize: Style.fontSizeS
+                    font.weight: Font.Bold
+                  }
+                  NText {
+                    text: "77"
+                    color: "#FFD700"
+                    pointSize: Style.fontSizeS
+                    font.weight: Font.Bold
+                  }
+                  NText {
+                    text: "Triple Clover"
+                    color: "lightgreen"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Value * 5"
+                    color: "lightgreen"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Triple Bomb"
+                    color: "indianred"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Value * 5"
+                    color: "indianred"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Three of a kind"
+                    color: Color.mPrimary
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Value * 2"
+                    color: Color.mPrimary
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Two of a kind"
+                    color: Color.mOnSurface
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Value"
+                    color: Color.mOnSurface
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "No match"
+                    color: Color.mOnSurfaceVariant
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Lose (-1 credit)"
+                    color: Color.mOnSurfaceVariant
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Clover"
+                    color: "lightgreen"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Joker + Value"
+                    color: "lightgreen"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Any bomb"
+                    color: "indianred"
+                    pointSize: Style.fontSizeS
+                  }
+                  NText {
+                    text: "Lose value"
+                    color: "indianred"
+                    pointSize: Style.fontSizeS
+                  }
+                }
+              }
             }
 
             // Symbol list (scrollable)
