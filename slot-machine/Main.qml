@@ -50,19 +50,19 @@ Item {
       gain: -1
     },
     {
-      icon: "clover-filled",
-      label: "Clover",
-      color: "lightgreen",
-      weight: 7,
-      gain: 2
-    },
-    {
       icon: "diamond-filled",
       label: "Diamond",
       color: "lightblue",
       weight: 11,
       gain: 6
     },
+		{
+			icon: "clover-filled",
+			label: "Clover",
+			color: "lightgreen",
+			weight: 7,
+			gain: 2
+		},
     // HAKARI DOMAIN EXPANSION SKIBIDI DOP DOP YES YES
     {
       icon: "play-card-7-filled",
