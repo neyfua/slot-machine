@@ -221,7 +221,7 @@ Item {
                    if (action === "spin") {
                      if (pluginApi) {
                        if (root.machine?.winDelayActive)
-                         return;
+                       return;
                        if (pluginApi.panelOpenScreen) {
                          if (root.machine) {
                            root.machine.silentSpin = true;
