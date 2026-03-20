@@ -100,6 +100,7 @@ Item {
   property int spinSerial: 0 // increments every spin so Panel always sees a change
   signal replayFlash  // replays the win flash animation
   property bool ipcSpin: false // true when spin was triggered by IPC, cleared after spinSerial updates
+  property bool silentSpin: false // suppresses Panel flash for IPC spin and right-click spin
   // Pre-picked results, revealed reel-by-reel as each stops
   property int pendingReel0: 0
   property int pendingReel1: 0
@@ -211,10 +212,10 @@ Item {
         } else
           // Special 3 of a kind : 2 clovers + 1 symbol
           if (normalSymbol && clovers === 2) {
-            gain += symbol.gain * 2;
+            gain += symbols.find(s => s.label === "Clover").gain * 2;
             result = "win";
-            // Add any clover as a bonus
-          } else if (symbol.label === "Clover") {
+            // Add any clover as a bonus (only when not part of 2-clover combo)
+          } else if (symbol.label === "Clover" && clovers < 2) {
             gain += count * symbol.gain;
             // Add each bomb as a malus
           } else if (symbol.label === "Bomb") {
@@ -262,6 +263,7 @@ Item {
     withBombs = bombs !== 0;
     var wasIpcSpin = ipcSpin;
     ipcSpin = false;
+    silentSpin = false;
     spinSerial += 1;
 
     saveState();
@@ -392,6 +394,7 @@ Item {
       if (root.winDelayActive)
         return;
       root.ipcSpin = true;
+      root.silentSpin = true;
       if (pluginApi.panelOpenScreen) {
         // Panel already open — spin immediately
         root.spin();
