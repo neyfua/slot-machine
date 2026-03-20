@@ -32,6 +32,7 @@ Item {
   readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int credits: machine?.credits ?? 0
   readonly property int totalWeight: machine?.totalWeight ?? 128
+  readonly property bool winDelayActive: machine?.winDelayActive ?? false
 
   // 0 = Spin, 1 = Paytable
   property int activeTab: 0
@@ -76,28 +77,36 @@ Item {
   property bool flashActive: false
   property int flashCount: 0
   property bool jackpotActive: false
+  property int lastKnownSerial: -1
 
   onSpinSerialChanged: {
-    if (lastGain > 0 && !machine?.ipcSpin) {
+    if (lastKnownSerial === -1) {
+      lastKnownSerial = spinSerial;
+      return;
+    }
+    lastKnownSerial = spinSerial;
+
+    flashTimer.stop();
+    flashActive = false;
+    flashCount = 0;
+    jackpotActive = false;
+    jackpotEndTimer.stop();
+
+    if (lastGain > 0 && !machine?.silentSpin) {
       flashCount = 0;
       flashActive = true;
       flashTimer.restart();
-      root.winDelayActive = true;
-      winDelayTimer.restart();
-    } else {
-      flashActive = false;
     }
-    if (lastResult === "jackpot") {
+    if (lastResult === "jackpot" && !machine?.silentSpin) {
       jackpotActive = true;
       jackpotEndTimer.restart();
-    } else {
-      jackpotActive = false;
     }
   }
 
   function doReplayFlash() {
     if (lastGain <= 0)
       return;
+    flashTimer.stop();
     flashCount = 0;
     flashActive = true;
     flashTimer.restart();
@@ -133,17 +142,6 @@ Item {
     interval: 3200
     onTriggered: {
       root.jackpotActive = false;
-    }
-  }
-
-  property bool winDelayActive: false
-
-  Timer {
-    id: winDelayTimer
-    interval: 1000
-    repeat: false
-    onTriggered: {
-      root.winDelayActive = false;
     }
   }
 
