@@ -68,13 +68,11 @@ Item {
   property int winFlashCount: 0
 
   onSpinSerialChanged: {
+    winFlashTimer.stop();
+    winFlash = false;
+    winFlashCount = 0;
     if (lastGain > 0) {
-      winFlashCount = 0;
-      winFlash = false;
       winFlashTimer.restart();
-    } else {
-      winFlashTimer.stop();
-      winFlash = false;
     }
   }
 
@@ -222,12 +220,14 @@ Item {
                    PanelService.closeContextMenu(screen);
                    if (action === "spin") {
                      if (pluginApi) {
+                       if (root.machine?.winDelayActive)
+                         return;
                        if (pluginApi.panelOpenScreen) {
-                         // Spin if panel is already open
-                         if (root.machine)
-                         root.machine.spin();
+                         if (root.machine) {
+                           root.machine.silentSpin = true;
+                           root.machine.spin();
+                         }
                        } else {
-                         // Open panel and spin if panel weren't opened with a delay
                          pluginApi.openPanel(root.screen, root);
                          contextSpinDelay.restart();
                        }
@@ -247,8 +247,10 @@ Item {
     interval: 350
     repeat: false
     onTriggered: {
-      if (root.machine)
+      if (root.machine) {
+        root.machine.silentSpin = true;
         root.machine.spin();
+      }
     }
   }
 
