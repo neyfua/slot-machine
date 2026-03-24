@@ -20,17 +20,17 @@ ColumnLayout {
   // Show credits toggle
   NToggle {
     Layout.fillWidth: true
-    label: "Show Credits"
-    description: "Display credit count next to the icon on horizontal bars."
+    label: pluginApi?.tr("panel.settings.show-credits")
+    description: pluginApi?.tr("panel.settings.show-credits-desc")
     checked: root.editShowCredits
     onToggled: checked => root.editShowCredits = checked
-    defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.editShowCredits || true
+    defaultValue: pluginApi?.manifest?.metadata?.defaultSettings?.showCredits || true
   }
 
   // Change BarWidget icon's color
   NColorChoice {
-    label: "Icon Color"
-    description: "Color of the slot icon shown in the bar widget."
+    label: pluginApi?.tr("panel.settings.icon-color")
+    description: pluginApi?.tr("panel.settings.icon-color-desc")
     currentKey: root.editIconColor
     onSelected: key => root.editIconColor = key
   }
@@ -60,7 +60,7 @@ ColumnLayout {
         }
 
         NText {
-          text: "IPC Commands"
+          text: pluginApi?.tr("panel.settings.ipc-commands")
           pointSize: Style.fontSizeS
           font.weight: Font.Medium
           color: Color.mOnSurface
@@ -69,7 +69,7 @@ ColumnLayout {
 
       NText {
         Layout.fillWidth: true
-        text: "Toggle panel: qs -c noctalia-shell ipc call plugin:slot-machine toggle"
+        text: pluginApi?.tr("panel.settings.ipc-toggle-panel") + " qs -c noctalia-shell ipc call plugin:slot-machine toggle"
         pointSize: Style.fontSizeXS
         font.family: Settings.data.ui.fontFixed
         color: Color.mOnSurfaceVariant
@@ -78,7 +78,7 @@ ColumnLayout {
 
       NText {
         Layout.fillWidth: true
-        text: "Spin: qs -c noctalia-shell ipc call plugin:slot-machine spin"
+        text: pluginApi?.tr("panel.settings.ipc-spin") + " qs -c noctalia-shell ipc call plugin:slot-machine spin"
         pointSize: Style.fontSizeXS
         font.family: Settings.data.ui.fontFixed
         color: Color.mOnSurfaceVariant
@@ -87,7 +87,7 @@ ColumnLayout {
 
       NText {
         Layout.fillWidth: true
-        text: "Reset credits: qs -c noctalia-shell ipc call plugin:slot-machine reset"
+        text: pluginApi?.tr("panel.settings.ipc-reset-credits") + " qs -c noctalia-shell ipc call plugin:slot-machine reset"
         pointSize: Style.fontSizeXS
         font.family: Settings.data.ui.fontFixed
         color: Color.mOnSurfaceVariant
