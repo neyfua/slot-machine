@@ -14,51 +14,51 @@ Item {
     // Common
     {
       icon: "poo-filled",
-      label: "Poo",
+      label: pluginApi?.tr("panel.symbols.Poo"),
       weight: 40,
       gain: 0
     },
     {
       icon: "melon-filled",
-      label: "Melon",
+      label: pluginApi?.tr("panel.symbols.Melon"),
       weight: 36,
       gain: 1
     },
     {
       icon: "lemon-2-filled",
-      label: "Lemon",
+      label: pluginApi?.tr("panel.symbols.Lemon"),
       weight: 29,
       gain: 2
     },
     {
       icon: "apple-filled",
-      label: "Apple",
+      label: pluginApi?.tr("panel.symbols.Apple"),
       weight: 20,
       gain: 3
     },
     {
       icon: "cherry-filled",
-      label: "Cherry",
+      label: pluginApi?.tr("panel.symbols.Cherry"),
       weight: 17,
       gain: 4
     },
     {
       icon: "bomb-filled",
-      label: "Bomb",
+      label: pluginApi?.tr("panel.symbols.Bomb"),
       color: "indianred",
       weight: 14,
       gain: -1
     },
     {
       icon: "diamond-filled",
-      label: "Diamond",
+      label: pluginApi?.tr("panel.symbols.Diamond"),
       color: "lightblue",
       weight: 11,
       gain: 6
     },
     {
       icon: "clover-filled",
-      label: "Clover",
+      label: pluginApi?.tr("panel.symbols.Clover"),
       color: "lightgreen",
       weight: 7,
       gain: 2
@@ -98,7 +98,10 @@ Item {
   property int lastGain: 0
   property string lastResult: "" // "jackpot" | "win" | "poowin" | "smallwin" | "loss" | "bombloss"
   property int spinSerial: 0 // increments every spin so Panel always sees a change
-  signal replayFlash  // replays the win flash animation
+  signal reel0Landed   // reel 0 stopped and symbol assigned
+  signal reel1Landed   // reel 1 stopped and symbol assigned
+  signal reel2Landed   // reel 2 stopped and symbol assigned
+  signal reelsLanded   // all reels stopped, result resolved
   property bool ipcSpin: false // true when spin was triggered by IPC, cleared after spinSerial updates
   property bool silentSpin: false // suppresses Panel flash for IPC spin and right-click spin
   // Pre-picked results, revealed reel-by-reel as each stops
@@ -135,7 +138,7 @@ Item {
     if (winDelayActive)
       return;
     if (credits <= 0) {
-      ToastService.showError("No credits left! Reset to play again.");
+      ToastService.showError(pluginApi?.tr("panel.toast.no-credits-left"));
       return;
     }
     // Pre-pick all three results now so each reel can reveal its
@@ -245,6 +248,12 @@ Item {
       result = "twobombbroke";
     }
 
+    // Detect exactly 3 bombs that drain you to 0 credits
+		if ((symbolCount["Bomb"] || 0) === 3 && credits + gain <= 0) {
+			gain = -credits;
+			result = "brokebombloss";
+		}
+
     if (gain > 0) {
       result = result || "smallwin";
       totalWins += 1;
@@ -261,7 +270,6 @@ Item {
     lastGain = gain;
     withClovers = clovers !== 0;
     withBombs = bombs !== 0;
-    var wasIpcSpin = ipcSpin;
     ipcSpin = false;
     silentSpin = false;
     spinSerial += 1;
@@ -281,7 +289,7 @@ Item {
     withBombs = false;
     spinSerial = 0;
     saveState();
-    ToastService.showNotice("Credits reset to 15");
+    ToastService.showNotice(pluginApi?.tr("panel.toast.credits-reset-to-15"));
   }
 
   function saveState() {
@@ -345,6 +353,7 @@ Item {
     repeat: false
     onTriggered: {
       root.landReel(0);
+      root.reel0Landed();
       stagger1.restart();
     }
   }
@@ -354,6 +363,7 @@ Item {
     repeat: false
     onTriggered: {
       root.landReel(1);
+      root.reel1Landed();
       stagger2.restart();
     }
   }
@@ -364,6 +374,8 @@ Item {
     onTriggered: {
       root.landReel(2);
       root.landReels();
+      root.reel2Landed();
+      root.reelsLanded();
     }
   }
 
@@ -429,10 +441,6 @@ Item {
 
     function setCredits(amount: int) {
       root.setCredits(amount);
-    }
-
-    function replayFlash() {
-      root.replayFlash();
     }
   }
 
