@@ -28,8 +28,17 @@ Item {
   readonly property string lastResult: machine?.lastResult ?? ""
   readonly property bool withClovers: machine?.withClovers ?? false
   readonly property bool withBombs: machine?.withBombs ?? false
+  readonly property int cloverCount: {
+    var count = 0;
+    var syms = root.symbols;
+    if (syms.length > 0) {
+      if (syms[root.reel0]?.label === "Clover") count++;
+      if (syms[root.reel1]?.label === "Clover") count++;
+      if (syms[root.reel2]?.label === "Clover") count++;
+    }
+    return count;
+  }
   readonly property int lastGain: machine?.lastGain ?? 0
-  readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int credits: machine?.credits ?? 0
   readonly property int totalWeight: machine?.totalWeight ?? 128
   readonly property bool winDelayActive: machine?.winDelayActive ?? false
@@ -46,70 +55,23 @@ Item {
       reel0Spinning = true;
       reel1Spinning = true;
       reel2Spinning = true;
-      r0Stop.restart();
-    }
-  }
-
-  Timer {
-    id: r0Stop
-    interval: 600
-    onTriggered: {
-      reel0Spinning = false;
-      r1Stop.restart();
-    }
-  }
-  Timer {
-    id: r1Stop
-    interval: 400
-    onTriggered: {
-      reel1Spinning = false;
-      r2Stop.restart();
-    }
-  }
-  Timer {
-    id: r2Stop
-    interval: 300
-    onTriggered: {
-      reel2Spinning = false;
     }
   }
 
   property bool flashActive: false
   property int flashCount: 0
   property bool jackpotActive: false
-  property int lastKnownSerial: -1
 
-  onSpinSerialChanged: {
-    if (lastKnownSerial === -1) {
-      lastKnownSerial = spinSerial;
-      return;
-    }
-    lastKnownSerial = spinSerial;
-
+  function doFlash() {
     flashTimer.stop();
     flashActive = false;
     flashCount = 0;
     jackpotActive = false;
     jackpotEndTimer.stop();
-
-    if (lastGain > 0 && !machine?.silentSpin) {
-      flashCount = 0;
+    if (lastGain > 0) {
       flashActive = true;
       flashTimer.restart();
     }
-    if (lastResult === "jackpot" && !machine?.silentSpin) {
-      jackpotActive = true;
-      jackpotEndTimer.restart();
-    }
-  }
-
-  function doReplayFlash() {
-    if (lastGain <= 0)
-      return;
-    flashTimer.stop();
-    flashCount = 0;
-    flashActive = true;
-    flashTimer.restart();
     if (lastResult === "jackpot") {
       jackpotActive = true;
       jackpotEndTimer.restart();
@@ -118,8 +80,19 @@ Item {
 
   Connections {
     target: root.machine
-    function onReplayFlash() {
-      root.doReplayFlash();
+    function onReel0Landed() {
+      root.reel0Spinning = false;
+    }
+    function onReel1Landed() {
+      root.reel1Spinning = false;
+    }
+    function onReel2Landed() {
+      root.reel2Spinning = false;
+    }
+    function onReelsLanded() {
+      if (root.machine?.silentSpin)
+        return;
+      root.doFlash();
     }
   }
 
@@ -229,7 +202,7 @@ Item {
           }
 
           NText {
-            text: "Slot Machine"
+            text: pluginApi?.tr("panel.slot-machine")
             pointSize: Style.fontSizeL
             font.weight: Font.Bold
             color: Color.mOnSurface
@@ -267,7 +240,7 @@ Item {
             }
 
             NText {
-              text: "Credits: " + root.credits
+							text: pluginApi?.tr("panel.Credits") + ": " + root.credits
               color: Color.mOnSurface
               pointSize: Style.fontSizeM
               font.weight: Font.Medium
@@ -275,7 +248,7 @@ Item {
             }
 
             NText {
-              text: (root.machine?.totalSpins ?? 0) + " spins"
+              text: (root.machine?.totalSpins ?? 0) + " " + pluginApi?.tr("panel.spins")
               color: Color.mOnSurfaceVariant
               pointSize: Style.fontSizeS
             }
@@ -297,14 +270,14 @@ Item {
 
             TabButton {
               icon: "play-card-7"
-              label: "Spin"
+              label: pluginApi?.tr("panel.tab-spin.Spin")
               isActive: root.activeTab === 0
               onClicked: root.activeTab = 0
             }
 
             TabButton {
               icon: "list"
-              label: "Paytable"
+              label: pluginApi?.tr("panel.tab-paytable.Paytable")
               isActive: root.activeTab === 1
               onClicked: root.activeTab = 1
             }
@@ -381,56 +354,57 @@ Item {
             NText {
               Layout.alignment: Qt.AlignHCenter
               text: {
-                var credits = root.lastGain + " credits!";
+                var credits = root.lastGain + " " + pluginApi?.tr("panel.tab-spin.credits") + "!";
                 if (root.spinning)
-                  return "Spinning...";
+                  return pluginApi?.tr("panel.tab-spin.Spinning") + "...";
 
                 if (root.lastResult === "twoseven")
-                  return "One away from glory! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.glory") + "! +" + credits;
                 if (root.lastResult === "jackpot")
-                  return "JACKPOT! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.JACKPOT") + "! +" + credits;
 
-                if (root.lastResult === "win" && root.withClovers)
-                  return "Lucky winner! +" + credits;
+                if (root.lastResult === "win" && root.withClovers && root.cloverCount === 3)
+                  return pluginApi?.tr("panel.tab-spin.lucky-winner") + "! +" + credits;
+                if (root.lastResult === "win" && root.withClovers && root.cloverCount === 2)
+                  return pluginApi?.tr("panel.tab-spin.winner") + "! +" + credits;
+                if (root.lastResult === "win" && root.withClovers && root.cloverCount === 1)
+                  return pluginApi?.tr("panel.tab-spin.lucky-you") + "! +" + credits;
                 if (root.lastResult === "win")
-                  return "Winner! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.three-of-a-kind") + "! +" + credits;
 
                 if (root.lastResult === "diamondwin")
-                  return "Triple Diamond! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.triple-diamonds") + "! +" + credits;
                 if (root.lastResult === "diamondsmallwin")
-                  return "Double Diamond! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.double-diamonds") + "! +" + credits;
 
                 if (root.lastResult === "smallwin" && root.withClovers || root.lastResult === "twopoo" && root.withClovers)
-                  return "Lucky you! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.lucky-you") + "! +" + credits;
                 if (root.lastResult === "smallwin")
-                  return "Two of a kind! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.two-of-a-kind") + "! +" + credits;
 
                 if (root.lastResult === "twopoo" && !root.withBombs && !root.withClovers)
-                  return "Two Poo Poo! " + credits;
+								return pluginApi?.tr("panel.tab-spin.twopoopoo") + "! +" + credits;
                 if (root.lastResult === "twopoo" && root.withBombs)
-                  return "Two Poo Poo and Boom! " + credits;
+                  return pluginApi?.tr("panel.tab-spin.twopoobomb") + "! " + credits;
                 if (root.lastResult === "poowin")
-                  return "Poo Poo Poo! +" + credits;
+                  return pluginApi?.tr("panel.tab-spin.poopoopoo") + "! +" + credits;
 
+								if (root.lastResult === "brokebombloss")
+									return pluginApi?.tr("panel.tab-spin.bombloss") + "! " + pluginApi?.tr("panel.tab-spin.brokebombloss") + "!";
                 if (root.lastResult === "twobombbroke")
-                  return "Boom! Boom! 0 credits left!";
+                  return pluginApi?.tr("panel.tab-spin.loss") + "! " + pluginApi?.tr("panel.tab-spin.loss") + "! " + pluginApi?.tr("panel.tab-spin.twobombbroke") + "!";
                 if (root.lastResult === "bombloss")
-                  return "Boom Boom Pow! " + credits;
-
-                if (root.lastResult === "brokebombloss")
-                  return "Boom! Your credits are already at 0! -" + credits;
-                if (root.lastResult === "brokebombloss3")
-                  return "Boom Boom Pow! Your credits are already at 0! -" + credits;
+                  return pluginApi?.tr("panel.tab-spin.bombloss") + "! " + credits;
 
                 if (root.lastResult === "loss") {
                   if (root.lastGain < 0)
-                    return "Boom! " + credits;
+									return pluginApi?.tr("panel.tab-spin.loss") + "! " + credits;
                   else if (root.withClovers)
-                    return "Balanced as all things should be!";
+                    return pluginApi?.tr("panel.tab-spin.balanced") + "!";
                   else
-                    return "No match. Try again!";
+                    return pluginApi?.tr("panel.tab-spin.no-match-try-again") + "!";
                 }
-                return "Press SPIN to play";
+                return pluginApi?.tr("panel.tab-spin.press-spin");
               }
               color: {
                 if (root.spinning)
@@ -445,7 +419,7 @@ Item {
                   return Color.mPrimary;
                 if (root.lastGain < 0)
                   return "indianred";
-                if (root.lastResult === "bombloss" || root.lastResult === "brokebombloss" || root.lastResult === "brokebombloss3" || root.lastResult === "twobombbroke")
+                if (root.lastResult === "bombloss" || root.lastResult === "brokebombloss" || root.lastResult === "twobombbroke")
                   return "indianred";
                 return Color.mOnSurfaceVariant;
               }
@@ -457,10 +431,10 @@ Item {
               Layout.fillWidth: true
               text: {
                 if (root.credits <= 0)
-                  return "No credits - hit Reset Credits to keep playing!";
+                  return pluginApi?.tr("panel.tab-spin.no-credits") + "!";
                 if (root.spinning)
-                  return "Spinning...";
-                return "SPIN (-1 credit)";
+                  return pluginApi?.tr("panel.tab-spin.Spinning") + "...";
+                return pluginApi?.tr("panel.tab-spin.minus-credits");
               }
               backgroundColor: (!root.spinning && !root.winDelayActive && root.credits > 0) ? Color.mPrimary : Color.mSurfaceVariant
               textColor: (!root.spinning && !root.winDelayActive && root.credits > 0) ? Color.mOnPrimary : Color.mOnSurfaceVariant
@@ -473,7 +447,7 @@ Item {
 
             NButton {
               Layout.fillWidth: true
-              text: "Reset Credits"
+              text: pluginApi?.tr("panel.tab-spin.reset-credits")
               enabled: root.credits <= 0 && !root.reel2Spinning && !root.spinning
               backgroundColor: (root.credits <= 0 && !root.reel2Spinning && !root.spinning) ? Color.mPrimary : Color.mSurfaceVariant
               textColor: (root.credits <= 0 && !root.reel2Spinning && !root.spinning) ? Color.mOnPrimary : Color.mOnSurfaceVariant
@@ -511,7 +485,7 @@ Item {
                   Layout.alignment: Qt.AlignTop
 
                   NText {
-                    text: "Symbol values"
+                    text: pluginApi?.tr("panel.tab-paytable.symbol-values")
                     pointSize: Style.fontSizeS
                     font.weight: Font.Bold
                     color: Color.mOnSurface
@@ -562,7 +536,7 @@ Item {
                   Layout.alignment: Qt.AlignTop
 
                   NText {
-                    text: "Combinations"
+                    text: pluginApi?.tr("panel.tab-paytable.combinations")
                     pointSize: Style.fontSizeS
                     font.weight: Font.Bold
                     color: Color.mOnSurface
@@ -571,7 +545,7 @@ Item {
                   }
 
                   NText {
-                    text: "Value"
+                    text: pluginApi?.tr("panel.tab-paytable.value")
                     pointSize: Style.fontSizeS
                     font.weight: Font.Bold
                     color: Color.mOnSurface
@@ -590,72 +564,72 @@ Item {
                     font.weight: Font.Bold
                   }
                   NText {
-                    text: "Triple Clover"
+                    text: pluginApi?.tr("panel.tab-paytable.triple-clovers")
                     color: "lightgreen"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Value * 5"
+                    text: pluginApi?.tr("panel.tab-paytable.value-x-5")
                     color: "lightgreen"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Triple Bomb"
+                    text: pluginApi?.tr("panel.tab-paytable.triple-bombs")
                     color: "indianred"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Value * 5"
+                    text: pluginApi?.tr("panel.tab-paytable.value-x-5")
                     color: "indianred"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Three of a kind"
+                    text: pluginApi?.tr("panel.tab-spin.three-of-a-kind")
                     color: Color.mPrimary
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Value * 2"
+                    text: pluginApi?.tr("panel.tab-paytable.value-x-2")
                     color: Color.mPrimary
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Two of a kind"
+                    text: pluginApi?.tr("panel.tab-spin.two-of-a-kind")
                     color: Color.mOnSurface
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Value"
+                    text: pluginApi?.tr("panel.tab-paytable.value")
                     color: Color.mOnSurface
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "No match"
+                    text: pluginApi?.tr("panel.tab-paytable.no-match")
                     color: Color.mOnSurfaceVariant
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Lose (-1 credit)"
+                    text: pluginApi?.tr("panel.tab-paytable.lose")
                     color: Color.mOnSurfaceVariant
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Clover"
+                    text: pluginApi?.tr("panel.tab-paytable.clover")
                     color: "lightgreen"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Joker + Value"
+                    text: pluginApi?.tr("panel.tab-paytable.joker")
                     color: "lightgreen"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Any bomb"
+                    text: pluginApi?.tr("panel.tab-paytable.any-bomb")
                     color: "indianred"
                     pointSize: Style.fontSizeS
                   }
                   NText {
-                    text: "Lose value"
+                    text: pluginApi?.tr("panel.tab-paytable.lose-value")
                     color: "indianred"
                     pointSize: Style.fontSizeS
                   }
@@ -685,7 +659,7 @@ Item {
                   spacing: Style.marginXS
 
                   NText {
-                    text: "All symbols"
+                    text: pluginApi?.tr("panel.tab-paytable.all-symbols")
                     pointSize: Style.fontSizeS
                     font.weight: Font.Bold
                     color: Color.mOnSurface
