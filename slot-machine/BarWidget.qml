@@ -32,9 +32,8 @@ Item {
   readonly property var machine: pluginApi?.mainInstance ?? null
   readonly property bool spinning: machine?.spinning ?? false
   readonly property int credits: machine?.credits ?? 0
-  readonly property var lastResult: machine?.lastResult ?? SPIN
+  readonly property var lastResult: machine?.lastResult ?? ""
   readonly property int lastGain: machine?.lastGain ?? 0
-  readonly property int spinSerial: machine?.spinSerial ?? 0
   readonly property int centerReel: machine?.reel1 ?? 0
   readonly property bool withClovers: machine?.withClovers ?? false
 
@@ -63,27 +62,21 @@ Item {
     onStopped: root.pulseOpacity = 1.0
   }
 
-  // Win flash triggered by spinSerial (always fires)
   property bool winFlash: false
   property int winFlashCount: 0
 
-  onSpinSerialChanged: {
+  function doWinFlash() {
     winFlashTimer.stop();
     winFlash = false;
     winFlashCount = 0;
-    if (lastGain > 0) {
+    if (lastGain > 0)
       winFlashTimer.restart();
-    }
   }
 
   Connections {
     target: root.machine
-    function onReplayFlash() {
-      if (root.lastGain <= 0)
-        return;
-      root.winFlashCount = 0;
-      root.winFlash = false;
-      winFlashTimer.restart();
+    function onReelsLanded() {
+      root.doWinFlash();
     }
   }
 
@@ -207,7 +200,7 @@ Item {
         label: "Reset Credits",
         action: "reset",
         icon: "coin",
-        disabled: root.credits > 0
+        enabled: root.credits <= 0
       },
       {
         label: "Settings",
