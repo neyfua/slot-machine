@@ -77,7 +77,7 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 - Boom!
 
-![Bomb](Assets/bomb.png)
+![Bomb](Assets/boom.png)
 
 - Boom Boom Pow!
 
@@ -87,6 +87,10 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ![Lucky you](Assets/lucky_you.png)
 
+- Winner!
+
+![Winner](Assets/winner.png)
+
 - Lucky winner!
 
 ![Lucky winner](Assets/lucky_winner.png)
@@ -95,17 +99,13 @@ qs -c noctalia-shell ipc call plugin:slot-machine reset
 
 ![Two of a Kind](Assets/two_of_a_kind.png)
 
-- Winner!
+- Double Diamonds!
 
-![Winner](Assets/winner.png)
+![Double Diamonds](Assets/double_diamonds.png)
 
-- Double Diamond!
+- Triple Diamonds!
 
-![Double Diamond](Assets/double_diamond.png)
-
-- Triple Diamond!
-
-![Triple Diamond](Assets/triple_diamond.png)
+![Triple Diamonds](Assets/triple_diamonds.png)
 
 - One away from glory!
 
