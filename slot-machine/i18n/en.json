@@ -1,0 +1,75 @@
+{
+  "panel": {
+    "slot-machine": "Slot Machine",
+    "Credits": "Credits",
+    "spins": "spins",
+    "tab-spin": {
+      "Spin": "Spin",
+      "minus-credits": "SPIN (-1 credit)",
+      "no-credits": "No credits - hit Reset Credits to keep playing",
+      "reset-credits": "Reset Credits",
+      "credits": "credits",
+      "press-spin": "Press SPIN to play",
+      "Spinning": "Spinning",
+      "no-match-try-again": "No match. Try again",
+      "poopoopoo": "Poo Poo Poo",
+      "twopoobomb": "Two Poo Poo and Boom",
+      "twopoopoo": "Two Poo Poo",
+      "loss": "Boom",
+      "bombloss": "Boom Boom Pow",
+      "brokebombloss": "Your credits are already at 0",
+      "twobombbroke": "0 credits left",
+      "balanced": "Balanced as all things should be",
+      "two-of-a-kind": "Two of a kind",
+      "three-of-a-kind": "Three of a kind",
+      "winner": "Winner",
+      "lucky-you": "Lucky you",
+      "lucky-winner": "Lucky winner",
+      "triple-diamonds": "Triple Diamonds",
+      "double-diamonds": "Double Diamonds",
+      "glory": "One away from Glory",
+      "JACKPOT": "JACKPOT"
+    },
+    "tab-paytable": {
+      "Paytable": "Paytable",
+      "symbol-values": "Symbol values",
+      "combinations": "Combinations",
+      "value": "Value",
+      "value-x-2": "Value * 2",
+      "value-x-5": "Value * 5",
+      "triple-clovers": "Triple Clovers",
+      "triple-bombs": "Triple Bombs",
+      "no-match": "No match",
+      "lose": "Lose (-1 credit)",
+      "clover": "Clover",
+      "joker": "Joker + Value",
+      "any-bomb": "Any bomb",
+      "lose-value": "Lose value",
+      "all-symbols": "All symbols"
+    },
+    "settings": {
+      "show-credits": "Show Credits",
+      "show-credits-desc": "Display credit count next to the icon on horizontal bars.",
+      "icon-color": "Icon Color",
+      "icon-color-desc": "Color of the slot icon shown in the bar widget.",
+      "ipc-commands": "IPC Commands",
+      "ipc-toggle-panel": "Toggle panel:",
+      "ipc-spin": "Spin:",
+      "ipc-reset-credits": "Reset credits:"
+    },
+    "symbols": {
+      "Poo": "Poo",
+      "Melon": "Melon",
+      "Lemon": "Lemon",
+      "Apple": "Apple",
+      "Cherry": "Cherry",
+      "Bomb": "Bomb",
+      "Diamond": "Diamond",
+      "Clover": "Clover"
+    },
+    "toast": {
+      "no-credits-left": "No credits left! Reset to play again.",
+      "credits-reset-to-15": "Credits reset to 15"
+    }
+  }
+}
