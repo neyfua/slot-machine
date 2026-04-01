@@ -249,10 +249,10 @@ Item {
     }
 
     // Detect exactly 3 bombs that drain you to 0 credits
-		if ((symbolCount["Bomb"] || 0) === 3 && credits + gain <= 0) {
-			gain = -credits;
-			result = "brokebombloss";
-		}
+    if ((symbolCount["Bomb"] || 0) === 3 && credits + gain <= 0) {
+      gain = -credits;
+      result = "brokebombloss";
+    }
 
     if (gain > 0) {
       result = result || "smallwin";
