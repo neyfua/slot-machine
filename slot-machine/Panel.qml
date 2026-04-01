@@ -32,9 +32,12 @@ Item {
     var count = 0;
     var syms = root.symbols;
     if (syms.length > 0) {
-      if (syms[root.reel0]?.label === "Clover") count++;
-      if (syms[root.reel1]?.label === "Clover") count++;
-      if (syms[root.reel2]?.label === "Clover") count++;
+      if (syms[root.reel0]?.label === "Clover")
+        count++;
+      if (syms[root.reel1]?.label === "Clover")
+        count++;
+      if (syms[root.reel2]?.label === "Clover")
+        count++;
     }
     return count;
   }
@@ -42,6 +45,90 @@ Item {
   readonly property int credits: machine?.credits ?? 0
   readonly property int totalWeight: machine?.totalWeight ?? 128
   readonly property bool winDelayActive: machine?.winDelayActive ?? false
+
+  function resultText() {
+    const tr = pluginApi?.tr;
+    const creditsText = root.lastGain + " " + tr("panel.tab-spin.credits") + "!";
+
+    if (root.spinning)
+      return tr("panel.tab-spin.Spinning") + "...";
+
+    switch (root.lastResult) {
+    case "twoseven":
+      return tr("panel.tab-spin.glory") + "! +" + creditsText;
+    case "jackpot":
+      return tr("panel.tab-spin.JACKPOT") + "! +" + creditsText;
+    case "diamondwin":
+      return tr("panel.tab-spin.triple-diamonds") + "! +" + creditsText;
+    case "diamondsmallwin":
+      return tr("panel.tab-spin.double-diamonds") + "! +" + creditsText;
+    case "poowin":
+      return tr("panel.tab-spin.poopoopoo") + "! +" + creditsText;
+    case "bombloss":
+      return tr("panel.tab-spin.bombloss") + "! " + creditsText;
+    case "brokebombloss":
+      return tr("panel.tab-spin.bombloss") + "! " + tr("panel.tab-spin.brokebombloss") + "!";
+    case "twobombbroke":
+      return tr("panel.tab-spin.loss") + "! " + tr("panel.tab-spin.loss") + "! " + tr("panel.tab-spin.twobombbroke") + "!";
+    }
+
+    if (root.lastResult === "win") {
+      if (root.withClovers) {
+        if (root.cloverCount === 3)
+          return tr("panel.tab-spin.lucky-winner") + "! +" + creditsText;
+        if (root.cloverCount === 2)
+          return tr("panel.tab-spin.winner") + "! +" + creditsText;
+        if (root.cloverCount === 1)
+          return tr("panel.tab-spin.lucky-you") + "! +" + creditsText;
+      }
+      return tr("panel.tab-spin.three-of-a-kind") + "! +" + creditsText;
+    }
+
+    if ((root.lastResult === "smallwin" && root.withClovers) || (root.lastResult === "twopoo" && root.withClovers))
+      return tr("panel.tab-spin.lucky-you") + "! +" + creditsText;
+
+    if (root.lastResult === "smallwin")
+      return tr("panel.tab-spin.two-of-a-kind") + "! +" + creditsText;
+
+    if (root.lastResult === "twopoo") {
+      if (!root.withBombs && !root.withClovers)
+        return tr("panel.tab-spin.twopoopoo") + "! +" + creditsText;
+      if (root.withBombs)
+        return tr("panel.tab-spin.twopoobomb") + "! " + creditsText;
+    }
+
+    if (root.lastResult === "loss") {
+      if (root.lastGain < 0)
+        return tr("panel.tab-spin.loss") + "! " + creditsText;
+      if (root.withClovers)
+        return tr("panel.tab-spin.balanced") + "!";
+      return tr("panel.tab-spin.no-match-try-again") + "!";
+    }
+
+    return tr("panel.tab-spin.press-spin");
+  }
+
+  function resultColor() {
+    if (root.spinning)
+      return Color.mOnSurfaceVariant;
+
+    if (root.lastResult === "jackpot" || root.lastResult === "twoseven")
+      return "#FFD700";
+
+    if (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")
+      return "lightblue";
+
+    if (root.lastGain > 0)
+      return root.withClovers ? "lightgreen" : Color.mPrimary;
+
+    if (root.lastGain < 0)
+      return "indianred";
+
+    if (root.lastResult === "bombloss" || root.lastResult === "brokebombloss" || root.lastResult === "twobombbroke")
+      return "indianred";
+
+    return Color.mOnSurfaceVariant;
+  }
 
   // 0 = Spin, 1 = Paytable
   property int activeTab: 0
@@ -240,7 +327,7 @@ Item {
             }
 
             NText {
-							text: pluginApi?.tr("panel.Credits") + ": " + root.credits
+              text: pluginApi?.tr("panel.Credits") + ": " + root.credits
               color: Color.mOnSurface
               pointSize: Style.fontSizeM
               font.weight: Font.Medium
@@ -353,76 +440,8 @@ Item {
 
             NText {
               Layout.alignment: Qt.AlignHCenter
-              text: {
-                var credits = root.lastGain + " " + pluginApi?.tr("panel.tab-spin.credits") + "!";
-                if (root.spinning)
-                  return pluginApi?.tr("panel.tab-spin.Spinning") + "...";
-
-                if (root.lastResult === "twoseven")
-                  return pluginApi?.tr("panel.tab-spin.glory") + "! +" + credits;
-                if (root.lastResult === "jackpot")
-                  return pluginApi?.tr("panel.tab-spin.JACKPOT") + "! +" + credits;
-
-                if (root.lastResult === "win" && root.withClovers && root.cloverCount === 3)
-                  return pluginApi?.tr("panel.tab-spin.lucky-winner") + "! +" + credits;
-                if (root.lastResult === "win" && root.withClovers && root.cloverCount === 2)
-                  return pluginApi?.tr("panel.tab-spin.winner") + "! +" + credits;
-                if (root.lastResult === "win" && root.withClovers && root.cloverCount === 1)
-                  return pluginApi?.tr("panel.tab-spin.lucky-you") + "! +" + credits;
-                if (root.lastResult === "win")
-                  return pluginApi?.tr("panel.tab-spin.three-of-a-kind") + "! +" + credits;
-
-                if (root.lastResult === "diamondwin")
-                  return pluginApi?.tr("panel.tab-spin.triple-diamonds") + "! +" + credits;
-                if (root.lastResult === "diamondsmallwin")
-                  return pluginApi?.tr("panel.tab-spin.double-diamonds") + "! +" + credits;
-
-                if (root.lastResult === "smallwin" && root.withClovers || root.lastResult === "twopoo" && root.withClovers)
-                  return pluginApi?.tr("panel.tab-spin.lucky-you") + "! +" + credits;
-                if (root.lastResult === "smallwin")
-                  return pluginApi?.tr("panel.tab-spin.two-of-a-kind") + "! +" + credits;
-
-                if (root.lastResult === "twopoo" && !root.withBombs && !root.withClovers)
-								return pluginApi?.tr("panel.tab-spin.twopoopoo") + "! +" + credits;
-                if (root.lastResult === "twopoo" && root.withBombs)
-                  return pluginApi?.tr("panel.tab-spin.twopoobomb") + "! " + credits;
-                if (root.lastResult === "poowin")
-                  return pluginApi?.tr("panel.tab-spin.poopoopoo") + "! +" + credits;
-
-								if (root.lastResult === "brokebombloss")
-									return pluginApi?.tr("panel.tab-spin.bombloss") + "! " + pluginApi?.tr("panel.tab-spin.brokebombloss") + "!";
-                if (root.lastResult === "twobombbroke")
-                  return pluginApi?.tr("panel.tab-spin.loss") + "! " + pluginApi?.tr("panel.tab-spin.loss") + "! " + pluginApi?.tr("panel.tab-spin.twobombbroke") + "!";
-                if (root.lastResult === "bombloss")
-                  return pluginApi?.tr("panel.tab-spin.bombloss") + "! " + credits;
-
-                if (root.lastResult === "loss") {
-                  if (root.lastGain < 0)
-									return pluginApi?.tr("panel.tab-spin.loss") + "! " + credits;
-                  else if (root.withClovers)
-                    return pluginApi?.tr("panel.tab-spin.balanced") + "!";
-                  else
-                    return pluginApi?.tr("panel.tab-spin.no-match-try-again") + "!";
-                }
-                return pluginApi?.tr("panel.tab-spin.press-spin");
-              }
-              color: {
-                if (root.spinning)
-                  return Color.mOnSurfaceVariant;
-                if (root.lastResult === "jackpot" || root.lastResult === "twoseven")
-                  return "#FFD700";
-                if (root.lastResult === "diamondwin" || root.lastResult === "diamondsmallwin")
-                  return "lightblue";
-                if (root.withClovers && root.lastGain > 0)
-                  return "lightgreen";
-                if (root.lastGain > 0)
-                  return Color.mPrimary;
-                if (root.lastGain < 0)
-                  return "indianred";
-                if (root.lastResult === "bombloss" || root.lastResult === "brokebombloss" || root.lastResult === "twobombbroke")
-                  return "indianred";
-                return Color.mOnSurfaceVariant;
-              }
+              text: resultText()
+              color: resultColor()
               pointSize: root.lastResult === "jackpot" ? Style.fontSizeL : Style.fontSizeM
               font.weight: root.lastResult === "jackpot" ? Font.Bold : Font.Normal
             }
